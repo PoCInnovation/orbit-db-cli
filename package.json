@@ -7,7 +7,7 @@
     "orbitdb": "./bin/run"
   },
   "homepage": "https://github.com/PoCInnovation/orbit-db-cli",
-  "license": "Apache License 2.0",
+  "license": "Apache-2.0",
   "main": "dist/index.js",
   "repository": "PoCInnovation/orbit-db-cli",
   "files": [

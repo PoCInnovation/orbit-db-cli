@@ -6,7 +6,13 @@
     "outDir": "dist",
     "rootDir": "src",
     "strict": true,
-    "target": "es2019"
+    "target": "es2019",
+    "module": "es2020",
+    "skipLibCheck": true,
+    "noImplicitAny": false,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "lib": ["ES2020", "ES2020.Promise", "ES2020.String", "ES2020.BigInt", "DOM", "DOM.Iterable"]
   },
   "include": [
     "src/**/*"

@@ -4,8 +4,9 @@
   "description": "CLI for orbit-db",
   "author": "Reza Rahemtola @RezaRahemtola",
   "bin": {
-    "orbitdb": "./bin/run"
+    "orbitdb": "./bin/run.cjs"
   },
+  "type": "module",
   "homepage": "https://github.com/PoCInnovation/orbit-db-cli",
   "license": "Apache-2.0",
   "main": "dist/index.js",
@@ -19,7 +20,11 @@
   "dependencies": {
     "@oclif/core": "^2",
     "@oclif/plugin-help": "^5",
-    "@oclif/plugin-plugins": "^2.4.6"
+    "@oclif/plugin-plugins": "^2.4.6",
+    "ipfs-core": "^0.18.0",
+    "ipfs-core-types": "^0.14.0",
+    "orbit-db": "^0.29.0",
+    "prom-client": "^14.2.0"
   },
   "devDependencies": {
     "@oclif/test": "^2.3.16",

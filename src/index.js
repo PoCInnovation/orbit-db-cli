@@ -1,4 +1,5 @@
 const poclif = require('../poclif/poclif');
+const LIBDB = require('./libdb/index.js');
 
 function HelloWorld() {
     console.log("Hello world !");
@@ -27,3 +28,9 @@ poclif.commands.new({
 });
 
 poclif.create("orbitdb")
+
+const getOrbitdb = async () => {
+    const ipfs = await LIBDB.initIpfs();
+    const orbitdb = await LIBDB.initOrbitDb(ipfs);
+    return orbitdb;
+}

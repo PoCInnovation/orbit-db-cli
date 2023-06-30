@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@ipld/dag-cbor": "^9.0.2",
+    "@ipld/dag-pb": "^4.0.3",
+    "blockstore-datastore-adapter": "^5.0.0",
+    "ipfs-repo": "^17.0.0",
+    "multiformats": "^12.0.1"
+  }
+}

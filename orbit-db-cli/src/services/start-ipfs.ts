@@ -2,8 +2,8 @@ import * as dabCbor from '@ipld/dag-cbor';
 import * as dagPb from '@ipld/dag-pb';
 import { BlockstoreDatastoreAdapter } from 'blockstore-datastore-adapter';
 import { LevelDatastore } from 'datastore-level';
-import { create } from 'ipfs-core';
-import { Datastore, createRepo } from 'ipfs-repo';
+import { create, IPFS } from 'ipfs-core';
+import { createRepo, Datastore, IPFSRepo } from 'ipfs-repo';
 import * as raw from 'multiformats/codecs/raw';
 import { ipfsConfig, repoPath } from './config';
 
@@ -25,9 +25,9 @@ const loadCodec = (nameOrCode: string | number) => {
 };
 
 
-const startIpfs = async (config: {} = {}) => {
+const startIpfs = async (): Promise<IPFS | null> => {
   try {
-    const repo = createRepo(defaultRepoPath, loadCodec, {
+    const repo: IPFSRepo = createRepo(defaultRepoPath, loadCodec, {
       root: new LevelDatastore(defaultRepoPath + '/root') as unknown as Datastore,
       blocks: new BlockstoreDatastoreAdapter(new LevelDatastore(defaultRepoPath + '/blocks') as unknown as Datastore),
       keys: new LevelDatastore(defaultRepoPath + '/keys') as unknown as Datastore,
@@ -35,13 +35,15 @@ const startIpfs = async (config: {} = {}) => {
       pins: new LevelDatastore(defaultRepoPath + '/pins') as unknown as Datastore,
     });
 
-    const ipfs = await create({
+    const ipfs: IPFS = await create({
       repo,
       ...ipfsConfig,
     });
     console.log('IPFS node created successfuly');
+    return ipfs;
   } catch (error) {
     console.error('Error initializing IPFS node:', error);
+    return null;
   }
 }
 

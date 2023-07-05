@@ -25,7 +25,7 @@ const loadCodec = (nameOrCode: string | number) => {
 };
 
 
-const startIpfs = async (): Promise<IPFS | null> => {
+const startIpfs = async (): Promise<IPFS> => {
   try {
     const repo: IPFSRepo = createRepo(defaultRepoPath, loadCodec, {
       root: new LevelDatastore(defaultRepoPath + '/root') as unknown as Datastore,
@@ -43,7 +43,7 @@ const startIpfs = async (): Promise<IPFS | null> => {
     return ipfs;
   } catch (error) {
     console.error('Error initializing IPFS node:', error);
-    return null;
+    throw new Error('A problem occured when starting ipfs');
   }
 }
 

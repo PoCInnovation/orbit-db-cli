@@ -1,7 +1,10 @@
-import { Args, Command, Flags } from '@oclif/core'
+import { Command, Flags } from '@oclif/core';
+import { defaultDatabaseDir } from '../../services/config';
+import { startOrbitDB } from '../../services/start-OrbitDB';
+
 
 export default class Create extends Command {
-  static description = 'describe the command here'
+  static description = 'Create an feed type database'
 
   static examples = [
     '<%= config.bin %> <%= command.id %>',
@@ -9,22 +12,20 @@ export default class Create extends Command {
 
   static flags = {
     // flag with a value (-n, --name=VALUE)
-    name: Flags.string({ char: 'n', description: 'name to print' }),
+    name: Flags.string({ char: 'n', description: 'name of the database', required: true }),
     // flag with no value (-f, --force)
     force: Flags.boolean({ char: 'f' }),
   }
 
-  static args = {
-    file: Args.string({ description: 'file to read' }),
-  }
-
   public async run(): Promise<void> {
-    const { args, flags } = await this.parse(Create)
-
-    const name = flags.name ?? 'world'
-    this.log(`hello ${name} from /home/ylan/Work/PoC/projects/OrbitDbCli/orbit-db-cli/src/commands/create.ts`)
-    if (args.file && flags.force) {
-      this.log(`you input --force and --file: ${args.file}`)
+    const { args, flags } = await this.parse(Create);
+    const orbitdb = await startOrbitDB();
+    if (flags.force) {
+      const db = orbitdb.create(flags.name, 'feed', { overwrite: true, directory: defaultDatabaseDir })
+      this.log(`created database: ${db.address}`);
+    } else {
+      const db = orbitdb.create(flags.name, 'feed', { directory: defaultDatabaseDir })
+      this.log(`created database: ${db.address}`);
     }
   }
 }

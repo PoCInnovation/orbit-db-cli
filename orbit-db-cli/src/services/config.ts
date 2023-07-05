@@ -1,12 +1,13 @@
 import path = require("path");
-const defaultOrbitDbDir = './orbitdb';
 import { Options } from 'ipfs-core';
+
+const defaultOrbitDbDir = './orbitdb';
 
 export const repoPath: string = process.env.IPFS_PATH || path.join(defaultOrbitDbDir, '/ipfs');
 
 const conf: Partial<Options> = {
   // silent: true,
-  // start: false,
+  start: false,
   config: {
     Addresses: {
       API: '/ip4/127.0.0.1/tcp/0',

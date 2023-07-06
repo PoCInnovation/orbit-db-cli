@@ -19,13 +19,15 @@ export default class Create extends Command {
 
   public async run(): Promise<void> {
     const { args, flags } = await this.parse(Create);
+    this.log(`starting orbitdb...`);
     const orbitdb = await startOrbitDB();
-    if (flags.force) {
-      const db = orbitdb.create(flags.name, 'feed', { overwrite: true, directory: defaultDatabaseDir })
-      this.log(`created database: ${db.address}`);
-    } else {
-      const db = orbitdb.create(flags.name, 'feed', { directory: defaultDatabaseDir })
-      this.log(`created database: ${db.address}`);
-    }
+    this.log(`started orbitdb`);
+
+    this.log(`creating database: ${orbitdb.address} ...`);
+    const db = orbitdb.create(flags.name, 'feed', {
+      overwrite: flags.force,
+      directory: defaultDatabaseDir
+    });
+    this.log(`created database: ${db.address}`);
   }
 }

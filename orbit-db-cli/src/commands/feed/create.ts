@@ -23,8 +23,8 @@ export default class Create extends Command {
     const orbitdb = await startOrbitDB();
     this.log(`started orbitdb`);
 
-    this.log(`creating database: ${orbitdb.address} ...`);
-    const db = orbitdb.create(flags.name, 'feed', {
+    this.log(`creating database name: ${flags.name} ...`);
+    const db = await orbitdb.create(flags.name, 'feed', {
       overwrite: flags.force,
       directory: defaultDatabaseDir
     });

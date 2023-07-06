@@ -1,13 +1,14 @@
 import { defaultDatabaseDir } from "./config";
-import { startIpfs } from "./start-ipfs";
-// @ts-ignore
-import OrbitDB from 'orbit-db';
 
-const startOrbitDB = async (): Promise<OrbitDB> => {
+const startOrbitDB = async () => {
+  const { startIpfs } = await import("./start-ipfs.js");
   try {
     const ipfs = await startIpfs();
+    // @ts-ignore
     const peerId = ipfs.id;
     const directory: string = process.env.ORBITDB_PATH || defaultDatabaseDir;
+    // @ts-ignore
+    const OrbitDB = await import("orbit-db");
     const orbitdb = OrbitDB.createInstance(ipfs, { directory: directory, id: peerId });
     return orbitdb;
   } catch (error) {

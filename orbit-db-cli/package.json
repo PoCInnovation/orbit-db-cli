@@ -22,7 +22,8 @@
     "@oclif/plugin-plugins": "^2.4.7",
     "datastore-level": "^10.1.1",
     "ipfs-core": "^0.18.0",
-    "orbit-db": "^0.29.0"
+    "orbit-db": "^0.29.0",
+    "prom-client": "^14.2.0"
   },
   "devDependencies": {
     "@oclif/test": "^2.3.19",

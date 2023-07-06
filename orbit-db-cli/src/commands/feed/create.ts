@@ -11,7 +11,7 @@ export default class Create extends Command {
   ]
 
   static flags = {
-    // flag with a value (-n, --name=VALUE)
+    // flag with a value (-n VALUE, --name=VALUE)
     name: Flags.string({ char: 'n', description: 'name of the database', required: true }),
     // flag with no value (-f, --force)
     force: Flags.boolean({ char: 'f' }),

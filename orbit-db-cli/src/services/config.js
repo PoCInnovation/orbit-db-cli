@@ -1,11 +1,10 @@
-import path = require("path");
-import { Options } from 'ipfs-core';
+const path = require("path");
 
 const defaultOrbitDbDir = './orbitdb';
 
-export const repoPath: string = process.env.IPFS_PATH || path.join(defaultOrbitDbDir, '/ipfs');
+export const repoPath = process.env.IPFS_PATH || path.join(defaultOrbitDbDir, '/ipfs');
 
-const conf: Partial<Options> = {
+const conf = {
   // silent: true,
   start: false,
   config: {
@@ -35,5 +34,5 @@ const conf: Partial<Options> = {
   },
 }
 
-export const defaultDatabaseDir: string = defaultOrbitDbDir;
-export const ipfsConfig: Partial<Options> = conf;
+export const defaultDatabaseDir = defaultOrbitDbDir;
+export const ipfsConfig = conf;

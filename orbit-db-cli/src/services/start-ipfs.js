@@ -3,32 +3,28 @@ import { ipfsConfig, repoPath } from './config';
 // defaultRepoPath: string
 const defaultRepoPath = repoPath || './ipfs/';
 
-// nameOrCode: string | number
-const loadCodec = (nameOrCode) => {
-  let res = null;
+const getLoadCodec = async () => {
+  // nameOrCode: string | number
+  const dagCbor = await import("@ipld/dag-cbor");
+  const dagPb = await import("@ipld/dag-pb");
+  const raw = await import("multiformats/codecs/raw");
 
-  // codecs: Record<string, any>
-  import("@ipld/dag-cbor").then(dagCbor => {
-    import("@ipld/dag-pb").then(dagPb => {
-      import("multiformats/codecs/raw").then(raw => {
-        const codecs = {
-          [dagPb.name]: dagPb,
-          [dagPb.code]: dagPb,
-          [dagCbor.name]: dagCbor,
-          [dagCbor.code]: dagCbor,
-          raw: raw,
-        };
+  const loadCodec = (nameOrCode) => {
+    // codecs: Record<string, any>
+    const codecs = {
+      [dagPb.name]: dagPb,
+      [dagPb.code]: dagPb,
+      [dagCbor.name]: dagCbor,
+      [dagCbor.code]: dagCbor,
+      raw: raw,
+    };
 
-        if (codecs[nameOrCode]) {
-          res = codecs[nameOrCode]
-        }
-      });
-    });
-  });
-  if (res) {
-    return res;
-  }
-  throw new Error(`Could not load codec for ${nameOrCode}`);
+    if (codecs[nameOrCode]) {
+      return codecs[nameOrCode];
+    }
+    throw new Error(`Could not load codec for ${nameOrCode}`);
+  };
+  return loadCodec;
 };
 
 
@@ -38,6 +34,7 @@ const startIpfs = async () => {
     const { BlockstoreDatastoreAdapter } = await import("blockstore-datastore-adapter");
     const { createRepo } = await import("ipfs-repo");
     const { LevelDatastore } = await import("datastore-level");
+    const loadCodec = await getLoadCodec();
     const repo = createRepo(defaultRepoPath, loadCodec, {
       root: new LevelDatastore(defaultRepoPath + '/root'),
       blocks: new BlockstoreDatastoreAdapter(new LevelDatastore(defaultRepoPath + '/blocks')),

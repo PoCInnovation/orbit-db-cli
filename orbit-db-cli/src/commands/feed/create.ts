@@ -1,7 +1,7 @@
 import { Command, Flags } from '@oclif/core';
-import { defaultDatabaseDir } from '../../services/config';
 import { startOrbitDB } from '../../services/start-OrbitDB';
 import { stopOrbitDB } from '../../services/stop-OrbitDB';
+import { createDB } from '../../services/create-DB';
 
 
 export default class Create extends Command {
@@ -19,16 +19,13 @@ export default class Create extends Command {
   }
 
   public async run(): Promise<void> {
-    const { args, flags } = await this.parse(Create);
+    const { flags } = await this.parse(Create);
     this.log(`starting orbitdb...`);
     const orbitdb = await startOrbitDB();
     this.log(`started orbitdb`);
 
     this.log(`creating database name: ${flags.name} ...`);
-    const db = await orbitdb.create(flags.name, 'feed', {
-      overwrite: flags.force,
-      directory: defaultDatabaseDir
-    });
+    const db = await createDB(orbitdb, flags.name, 'feed', flags.force);
     this.log(`created database: ${db.address}`);
     await stopOrbitDB(orbitdb);
   }

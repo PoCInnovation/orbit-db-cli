@@ -4,11 +4,11 @@ import { ipfsConfig, repoPath } from './config';
 const defaultRepoPath = repoPath || './ipfs/';
 
 const getLoadCodec = async () => {
-  // nameOrCode: string | number
   const dagCbor = await import("@ipld/dag-cbor");
   const dagPb = await import("@ipld/dag-pb");
   const raw = await import("multiformats/codecs/raw");
 
+  // nameOrCode: string | number
   const loadCodec = (nameOrCode) => {
     // codecs: Record<string, any>
     const codecs = {

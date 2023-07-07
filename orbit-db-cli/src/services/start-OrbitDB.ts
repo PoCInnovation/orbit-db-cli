@@ -1,6 +1,7 @@
 import { defaultDatabaseDir } from "./config";
 
-const startOrbitDB = async (offline: boolean = true) => {
+// return: OrbitDB
+const startOrbitDB = async (offline: boolean = true): Promise<any> => {
   const { startIpfs } = await import("./start-ipfs.js");
   try {
     const ipfs = await startIpfs();

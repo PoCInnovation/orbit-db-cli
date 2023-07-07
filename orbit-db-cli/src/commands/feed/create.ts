@@ -1,6 +1,7 @@
 import { Command, Flags } from '@oclif/core';
 import { defaultDatabaseDir } from '../../services/config';
 import { startOrbitDB } from '../../services/start-OrbitDB';
+import { stopOrbitDB } from '../../services/stop-OrbitDB';
 
 
 export default class Create extends Command {
@@ -29,5 +30,6 @@ export default class Create extends Command {
       directory: defaultDatabaseDir
     });
     this.log(`created database: ${db.address}`);
+    await stopOrbitDB(orbitdb);
   }
 }

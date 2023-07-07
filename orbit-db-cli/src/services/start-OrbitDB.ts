@@ -1,6 +1,6 @@
 import { defaultDatabaseDir } from "./config";
 
-const startOrbitDB = async () => {
+const startOrbitDB = async (offline: boolean = true) => {
   const { startIpfs } = await import("./start-ipfs.js");
   try {
     const ipfs = await startIpfs();
@@ -9,7 +9,7 @@ const startOrbitDB = async () => {
     const directory: string = process.env.ORBITDB_PATH || defaultDatabaseDir;
     // @ts-ignore
     const { default: OrbitDB } = await import("orbit-db");
-    const orbitdb = OrbitDB.createInstance(ipfs, { directory: directory, id: peerId });
+    const orbitdb = OrbitDB.createInstance(ipfs, { offline, directory, id: peerId });
     return orbitdb;
   } catch (error) {
     console.error('An error occured while starting OrbitDB', error);

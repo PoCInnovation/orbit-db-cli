@@ -9,7 +9,12 @@
     "strict": true,
     "target": "esnext",
     "allowJs": true,
-    "moduleResolution": "node16"
+    "moduleResolution": "node16",
+    "baseUrl": "src/",
+    "paths": {
+      "@/services/*": ["services/*"],
+      "@/utils/*": ["utils/*"]
+    }
   },
   "include": [
     "src/**/*"

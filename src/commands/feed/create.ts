@@ -1,7 +1,7 @@
+import { startOrbitDB } from '@/services/start-OrbitDB';
+import { stopOrbitDB } from '@/services/stop-OrbitDB';
+import { createDB } from '@/utils/create-DB';
 import { Command, Flags } from '@oclif/core';
-import { startOrbitDB } from '../../services/start-OrbitDB';
-import { stopOrbitDB } from '../../services/stop-OrbitDB';
-import { createDB } from '../../utils/create-DB';
 
 
 export default class Create extends Command {

@@ -2,7 +2,7 @@
   "name": "orbit-db-cli",
   "version": "0.0.0",
   "description": "an CLI for orbit-db",
-  "author": "Reza Rahemtola @RezaRahemtola",
+  "author": "@PoCInnovation",
   "bin": {
     "orbitdb": "./bin/run"
   },

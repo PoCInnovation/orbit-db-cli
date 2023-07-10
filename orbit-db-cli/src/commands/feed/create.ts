@@ -5,7 +5,7 @@ import { createDB } from '../../utils/create-DB';
 
 
 export default class Create extends Command {
-  static description = 'Create an feed type database'
+  static description = 'Create a feed type database'
 
   static examples = [
     '<%= config.bin %> <%= command.id %> --name=myFeedDbLOL',

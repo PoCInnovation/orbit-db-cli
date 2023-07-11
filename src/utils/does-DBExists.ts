@@ -5,7 +5,7 @@ export { doesDBExists }
 /**
 * @brief Check if a DB exists
 *
-* @param orbitdb the orbitdb instance (src/services/stop-OrbitDB.ts)
+* @param orbitdb the orbitdb instance (src/services/start-OrbitDB.ts)
 * @param name the resolved name of the DB (src/utils/resolve-DBIdByName.ts)
 *
 * @return true if the DB exists

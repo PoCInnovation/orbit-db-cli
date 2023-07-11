@@ -29,7 +29,7 @@ const getLoadCodec = async () => {
 
 
 // return: Promise<IPFS>
-const startIpfs = async () => {
+const startIpfs = async (start) => {
   try {
     const { BlockstoreDatastoreAdapter } = await import("blockstore-datastore-adapter");
     const { createRepo } = await import("ipfs-repo");
@@ -43,10 +43,15 @@ const startIpfs = async () => {
       pins: new LevelDatastore(defaultRepoPath + '/pins'),
     });
 
+    const ipfsConf = ipfsConfig;
+    if (start) {
+      ipfsConf.start = true;
+    }
+
     const { create } = await import("ipfs-core");
     const ipfs = await create({
       repo,
-      ...ipfsConfig,
+      ...ipfsConf,
     });
     return ipfs;
   } catch (error) {

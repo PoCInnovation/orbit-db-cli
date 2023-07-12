@@ -1,7 +1,6 @@
 import { startOrbitDB } from '../../services/start-OrbitDB';
 import { stopOrbitDB } from '../../services/stop-OrbitDB';
 import { openDB } from '../../utils/open-DB';
-import { resolveDBIdByName } from '../../utils/resolve-DBIdByName';
 import { Command, Flags } from '@oclif/core';
 
 
@@ -10,7 +9,6 @@ export default class FeedReplicate extends Command {
 
   static examples = [
     '<%= config.bin %> <%= command.id %> --name=myFeedDbLOL',
-    '<%= config.bin %> <%= command.id %> --name=myFeedDbLOL --force',
   ]
 
   static flags = {
@@ -19,13 +17,12 @@ export default class FeedReplicate extends Command {
   }
 
   public async run(): Promise<void> {
-    this.error('NotImplementedError');
+    // this.error('NotImplementedError');
     const { flags } = await this.parse(FeedReplicate);
     const orbitdb = await startOrbitDB(false);
-    const name = await resolveDBIdByName(orbitdb, flags.name, 'feed');
 
-    this.log(`opening database name: ${name} ...`);
-    const db = await openDB(orbitdb, name, 'feed', true, true);
+    this.log(`opening database name: ${flags.name} ...`);
+    const db = await openDB(orbitdb, flags.name, 'feed', true, true);
     this.log(`opened database: ${db.address} and replicated it`);
     await stopOrbitDB(orbitdb); // this give the error: NotStartedError: not started
   }

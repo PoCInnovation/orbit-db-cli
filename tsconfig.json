@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "importHelpers": true,
+    "skipLibCheck": true,
+    "module": "commonjs",
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "target": "esnext",
+    "allowJs": true,
+    "moduleResolution": "node16",
+  },
+  "include": [
+    "src/**/*"
+  ]
+}

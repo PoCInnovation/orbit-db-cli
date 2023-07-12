@@ -1,6 +1,6 @@
-import { defaultDatabaseDir } from '../services/config';
+import {defaultDatabaseDir} from '../services/config'
 
-export { doesDBExists }
+export {doesDBExists}
 
 /**
 * @brief Check if a DB exists
@@ -11,8 +11,8 @@ export { doesDBExists }
 * @return true if the DB exists
 */
 const doesDBExists = async (orbitdb: any, name: string) => {
-  const cache = await orbitdb._requestCache(name, defaultDatabaseDir);
-  const haveDb = await orbitdb._haveLocalData(cache, name);
+  const cache = await orbitdb._requestCache(name, defaultDatabaseDir)
+  const haveDb = await orbitdb._haveLocalData(cache, name)
 
-  return haveDb;
+  return haveDb
 }

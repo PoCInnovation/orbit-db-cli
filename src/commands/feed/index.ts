@@ -1,4 +1,4 @@
-import { Command } from '@oclif/core'
+import {Command} from '@oclif/core'
 
 export default class Feed extends Command {
   static description = 'feed related commands'
@@ -19,6 +19,6 @@ export default class Feed extends Command {
   }
 
   public async run(): Promise<void> {
-    this.log(`feed basic command`)
+    this.log('feed basic command')
   }
 }

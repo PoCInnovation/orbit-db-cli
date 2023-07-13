@@ -7,7 +7,7 @@ const startOrbitDB = async (offline = true): Promise<any> => {
     const ipfs = await startIpfs(!offline);
     // @ts-ignore
     const peerId = await ipfs.id()
-    const directory: string = process.env.ORBITDB_PATH || defaultDatabaseDir
+    const directory: string = defaultDatabaseDir
     // @ts-ignore
     const {default: OrbitDB} = await import('orbit-db')
     const orbitdb = OrbitDB.createInstance(ipfs, {offline, directory, id: peerId})

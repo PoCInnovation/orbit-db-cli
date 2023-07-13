@@ -1,6 +1,6 @@
-import { DBType } from './create-DB';
+import {DBType} from './create-DB'
 
-export { openDB };
+export {openDB}
 
 /**
 * @brief Open a DB
@@ -14,12 +14,12 @@ export { openDB };
 *
 * @return
 */
-const openDB = async (orbitdb: any, name: string, type: DBType, replicate: boolean = false, create: boolean = false, localOnly: boolean = false) => {
+const openDB = async (orbitdb: any, name: string, type: DBType, replicate = false, create = false, localOnly = false) => {
   const db = await orbitdb.open(name, {
     replicate,
     type,
     create,
     localOnly,
-  });
-  return db;
+  })
+  return db
 }

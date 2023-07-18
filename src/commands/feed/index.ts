@@ -1,4 +1,4 @@
-import {Command} from '@oclif/core'
+import { Command } from '@oclif/core'
 
 export default class Feed extends Command {
   static description = 'feed related commands'

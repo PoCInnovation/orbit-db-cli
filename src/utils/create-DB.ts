@@ -12,7 +12,7 @@ type CreateDBOptions = {
 
 const defaultCreateDBOptions = {
   overwrite: false,
-  directory: defaultDatabaseDir
+  directory: defaultDatabaseDir,
 }
 
 // orbitdb: OrbitDB
@@ -30,13 +30,14 @@ const createDB = async (orbitdb: any, name: string, type: DBType, options: Creat
   if (options.overwrite === undefined || options.overwrite === null) {
     options.overwrite = defaultCreateDBOptions.overwrite
   }
+
   if (options.directory === undefined || options.directory === null) {
     options.directory = defaultCreateDBOptions.directory
   }
 
   const db = await orbitdb.create(name, type, {
     overwrite: options.overwrite,
-    directory: options.directory
+    directory: options.directory,
   })
   return db
 }

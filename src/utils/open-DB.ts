@@ -13,7 +13,7 @@ const defaultOpenDBOptions = {
   replicate: false,
   create: false,
   localOnly: false,
-  sync: false
+  sync: false,
 }
 
 /**
@@ -30,12 +30,15 @@ const openDB = async (orbitdb: any, name: string, type: DBType, options: OpenDBO
   if (options.replicate === undefined || options.replicate === null) {
     options.replicate = defaultOpenDBOptions.replicate
   }
+
   if (options.create === undefined || options.create === null) {
     options.create = defaultOpenDBOptions.create
   }
+
   if (options.localOnly === undefined || options.localOnly === null) {
     options.localOnly = defaultOpenDBOptions.localOnly
   }
+
   if (options.sync === undefined || options.sync === null) {
     options.sync = defaultOpenDBOptions.sync
   }
@@ -45,7 +48,7 @@ const openDB = async (orbitdb: any, name: string, type: DBType, options: OpenDBO
     replicate: options.replicate,
     create: options.create,
     localOnly: options.localOnly,
-    sync: options.sync
+    sync: options.sync,
   })
   return db
 }

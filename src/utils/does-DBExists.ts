@@ -1,6 +1,6 @@
-import { defaultDatabaseDir } from '../services/config'
+import {defaultDatabaseDir} from '../services/config'
 
-export { doesDBExists }
+export {doesDBExists}
 
 /**
 * @brief Check if a DB exists

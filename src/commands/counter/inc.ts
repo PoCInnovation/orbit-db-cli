@@ -2,6 +2,7 @@ import {startOrbitDB} from '../../services/start-OrbitDB'
 import {stopOrbitDB} from '../../services/stop-OrbitDB'
 import {resolveDBIdByName} from '../../utils/resolve-DBIdByName'
 import {openDB} from '../../utils/open-DB'
+import {saveDB} from '../../utils/save-DB'
 import {Command, Flags} from '@oclif/core'
 
 export default class CounterInc extends Command {
@@ -25,6 +26,7 @@ export default class CounterInc extends Command {
     const db = await openDB(orbitdb, name, 'counter')
 
     await db.inc(flags.amount)
+    await saveDB(db)
     this.log(`value is now ${db.value}`)
     await stopOrbitDB(orbitdb)
   }

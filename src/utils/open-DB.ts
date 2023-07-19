@@ -50,5 +50,8 @@ const openDB = async (orbitdb: any, name: string, type: DBType, options: OpenDBO
     localOnly: options.localOnly,
     sync: options.sync,
   })
+  try {
+    await db.loadFromSnapshot()
+  } catch (_) {}
   return db
 }

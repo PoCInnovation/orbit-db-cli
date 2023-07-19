@@ -1,6 +1,6 @@
 const path = require("path");
 
-const defaultOrbitDbDir = './orbitdb';
+const defaultOrbitDbDir = process.env.ORBITDB_PATH || './orbitdb';
 
 export const repoPath = process.env.IPFS_PATH || path.join(defaultOrbitDbDir, '/ipfs');
 

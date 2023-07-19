@@ -22,17 +22,17 @@ export default class Add extends Command {
   public async run(): Promise<void> {
     const { flags } = await this.parse(Add)
     const orbitdb = await startOrbitDB(true)
-
     const dbAdress = await resolveDBIdByName(orbitdb, flags.dbName, 'feed')
-    const DBExists = await doesDBExists(orbitdb, flags.dbName)
+    const DBExists = await doesDBExists(orbitdb, dbAdress)
 
     if (!DBExists) {
-      this.error(`database '${flags.name}' (or '${dbAdress}') does not exist`)
+      this.error(`database '${flags.dbName}' (or '${dbAdress}') does not exist`)
     }
 
-    const db = await openDB(orbitdb, flags.dbName, 'feed')
+    const db = await openDB(orbitdb, dbAdress, 'feed')
     flags.file.forEach(async (file) => {
       await db.add(file)
+      this.log(`added file: '${file}' to feed '${flags.dbName}' database`)
     })
     await db.close()
     await stopOrbitDB(orbitdb)

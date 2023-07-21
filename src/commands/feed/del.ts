@@ -4,8 +4,9 @@ import { stopOrbitDB } from "../../services/stop-OrbitDB";
 import { doesDBExists } from "../../utils/does-DBExists";
 import { openDB } from "../../utils/open-DB";
 import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
+import { saveDB } from "../../utils/save-DB";
 
-export default class Del extends Command {
+export default class FeedDel extends Command {
   static description = "Delete a file to a feed type database";
 
   static examples: Command.Example[] = [
@@ -29,7 +30,7 @@ export default class Del extends Command {
   };
 
   public async run(): Promise<void> {
-    const { flags } = await this.parse(Del);
+    const { flags } = await this.parse(FeedDel);
     const orbitdb = await startOrbitDB(true);
     const dbAdress = await resolveDBIdByName(orbitdb, flags.dbName, "feed");
     const DBExists = await doesDBExists(orbitdb, dbAdress);
@@ -47,6 +48,7 @@ export default class Del extends Command {
         `deleted entry number ${entry} from feed '${flags.dbName}' database`,
       );
     });
+    await saveDB(db);
     await db.close();
     await stopOrbitDB(orbitdb);
   }

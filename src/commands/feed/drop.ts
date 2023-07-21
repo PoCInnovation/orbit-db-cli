@@ -7,7 +7,7 @@ import { doesDBExists } from "../../utils/does-DBExists";
 import { openDB } from "../../utils/open-DB";
 import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
 
-export default class Drop extends Command {
+export default class FeedDrop extends Command {
   static description =
     "Delete a feed type database locally (This doesn't remove data on other nodes that have the removed database replicated.)";
 
@@ -32,7 +32,7 @@ export default class Drop extends Command {
   };
 
   public async run(): Promise<void> {
-    const { flags } = await this.parse(Drop);
+    const { flags } = await this.parse(FeedDrop);
     const orbitdb = await startOrbitDB(true);
     const name = await resolveDBIdByName(orbitdb, flags.name, "feed");
     const DBExists = await doesDBExists(orbitdb, name);

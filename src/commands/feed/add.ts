@@ -4,8 +4,9 @@ import { stopOrbitDB } from "../../services/stop-OrbitDB";
 import { doesDBExists } from "../../utils/does-DBExists";
 import { openDB } from "../../utils/open-DB";
 import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
+import { saveDB } from "../../utils/save-DB";
 
-export default class Add extends Command {
+export default class FeedAdd extends Command {
   static description = "Add a file to a feed type database";
 
   static examples: Command.Example[] = [
@@ -30,7 +31,7 @@ export default class Add extends Command {
   };
 
   public async run(): Promise<void> {
-    const { flags } = await this.parse(Add);
+    const { flags } = await this.parse(FeedAdd);
     const orbitdb = await startOrbitDB(true);
     const dbAdress = await resolveDBIdByName(orbitdb, flags.dbName, "feed");
     const DBExists = await doesDBExists(orbitdb, dbAdress);
@@ -46,6 +47,7 @@ export default class Add extends Command {
       await db.add(file);
       this.log(`added file: '${file}' to feed '${flags.dbName}' database`);
     });
+    await saveDB(db);
     await db.close();
     await stopOrbitDB(orbitdb);
   }

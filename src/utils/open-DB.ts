@@ -55,5 +55,8 @@ const openDB = async (
     localOnly: options.localOnly,
     sync: options.sync,
   });
+  try {
+    await db.loadFromSnapshot();
+  } catch (_) {}
   return db;
 };

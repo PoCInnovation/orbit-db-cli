@@ -42,14 +42,14 @@ export default class FeedAdd extends Command {
     }
 
     const db = await openDB(orbitdb, dbAdress, "feed");
-    flags.data.forEach(async (data) => {
+    for (const data of flags.data) {
       try {
         const hash = await db.add(data);
         this.log(`added data: '${data}' to feed '${flags.dbName}' database : ${hash}`);
       } catch (error) {
         this.log(`Error occured while adding entry: ${error}`);
       }
-    });
+    }
     await saveDB(db);
     await db.close();
     await stopOrbitDB(orbitdb);

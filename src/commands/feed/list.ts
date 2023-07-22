@@ -41,12 +41,12 @@ export default class FeedList extends Command {
     }
 
     const db = await openDB(orbitdb, dbAdress, "feed")
-    const entries = db.iterator({ limit: flags.limit || -1, reverse: true })
+    const entries = db.iterator({ limit: flags.limit || -1, reverse: true }).collect()
     if (entries.length > 0) {
       this.log(`--- Database last ${entries.length} entries ---`)
-      entries.forEach((entry: any) => {
+      for (const entry of entries) {
         this.log(`${JSON.stringify(entry.payload.value, null, 2)}`)
-      });
+      };
     } else {
       this.log(`Database ${db.dbname} is empty`)
     }

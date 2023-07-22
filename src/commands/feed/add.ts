@@ -21,11 +21,10 @@ export default class FeedAdd extends Command {
       required: true,
     }),
     // flag with a value (-n VALUE, --name=VALUE)
-    file: Flags.file({
+    data: Flags.string({
       char: "f",
       description: "file to add into db",
       required: true,
-      exists: true,
       multiple: true,
     }),
   };
@@ -43,9 +42,13 @@ export default class FeedAdd extends Command {
     }
 
     const db = await openDB(orbitdb, dbAdress, "feed");
-    flags.file.forEach(async (file) => {
-      await db.add(file);
-      this.log(`added file: '${file}' to feed '${flags.dbName}' database`);
+    flags.data.forEach(async (data) => {
+      try {
+        const hash = await db.add(data);
+        this.log(`added data: '${data}' to feed '${flags.dbName}' database : ${hash}`);
+      } catch (error) {
+        this.log(`Error occured while adding entry: ${error}`);
+      }
     });
     await saveDB(db);
     await db.close();

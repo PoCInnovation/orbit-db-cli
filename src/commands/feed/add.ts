@@ -4,8 +4,9 @@ import { stopOrbitDB } from "../../services/stop-OrbitDB";
 import { doesDBExists } from "../../utils/does-DBExists";
 import { openDB } from "../../utils/open-DB";
 import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
+import { saveDB } from "../../utils/save-DB";
 
-export default class Add extends Command {
+export default class FeedAdd extends Command {
   static description = "Add a file to a feed type database";
 
   static examples: Command.Example[] = [
@@ -20,17 +21,16 @@ export default class Add extends Command {
       required: true,
     }),
     // flag with a value (-n VALUE, --name=VALUE)
-    file: Flags.file({
+    data: Flags.string({
       char: "f",
       description: "file to add into db",
       required: true,
-      exists: true,
       multiple: true,
     }),
   };
 
   public async run(): Promise<void> {
-    const { flags } = await this.parse(Add);
+    const { flags } = await this.parse(FeedAdd);
     const orbitdb = await startOrbitDB(true);
     const dbAdress = await resolveDBIdByName(orbitdb, flags.dbName, "feed");
     const DBExists = await doesDBExists(orbitdb, dbAdress);
@@ -42,10 +42,15 @@ export default class Add extends Command {
     }
 
     const db = await openDB(orbitdb, dbAdress, "feed");
-    flags.file.forEach(async (file) => {
-      await db.add(file);
-      this.log(`added file: '${file}' to feed '${flags.dbName}' database`);
-    });
+    for (const data of flags.data) {
+      try {
+        const hash = await db.add(data);
+        this.log(`added data: '${data}' to feed '${flags.dbName}' database : ${hash}`);
+      } catch (error) {
+        this.log(`Error occured while adding entry: ${error}`);
+      }
+    }
+    await saveDB(db);
     await db.close();
     await stopOrbitDB(orbitdb);
   }

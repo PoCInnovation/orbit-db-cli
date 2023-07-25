@@ -3,7 +3,7 @@ import { startOrbitDB } from "../../services/start-OrbitDB";
 import { stopOrbitDB } from "../../services/stop-OrbitDB";
 import { createDB } from "../../utils/create-DB";
 
-export default class Create extends Command {
+export default class FeedCreate extends Command {
   static description = "Create a feed type database";
 
   static examples = [
@@ -26,7 +26,7 @@ export default class Create extends Command {
   };
 
   public async run(): Promise<void> {
-    const { flags } = await this.parse(Create);
+    const { flags } = await this.parse(FeedCreate);
     const orbitdb = await startOrbitDB(true);
 
     this.log(`creating database name: ${flags.name} ...`);

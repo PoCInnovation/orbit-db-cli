@@ -34,7 +34,7 @@ export default class CounterInc extends Command {
     const db = await openDB(orbitdb, name, "counter");
 
     if (flags.amount < 1) {
-      this.error("Amount must be positiv")
+      this.error("Amount must be positiv");
     }
 
     await db.inc(flags.amount);

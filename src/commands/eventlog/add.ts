@@ -57,7 +57,7 @@ export default class EventlogAdd extends Command {
       }
       try {
         const hash = await db.add(data);
-        this.log(`added data: '${data}' to feed '${flags.dbName}' database : ${hash}`);
+        this.log(`added data: '${data}' to eventlog '${flags.dbName}' database : ${hash}`);
       } catch (error) {
         isError = true;
         this.log(`Error occured while adding entry ${data}: ${error}`);

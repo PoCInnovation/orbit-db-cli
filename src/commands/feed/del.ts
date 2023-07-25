@@ -45,7 +45,9 @@ export default class FeedDel extends Command {
     for (const entry of flags.entries) {
       try {
         await db.del(entry);
-        this.log(`deleted entry number ${entry} from feed '${flags.dbName}' database`);
+        this.log(
+          `deleted entry number ${entry} from feed '${flags.dbName}' database`,
+        );
       } catch (error) {
         this.log(`Error occured while deleting entry: ${error}`);
       }

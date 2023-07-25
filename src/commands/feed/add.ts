@@ -45,7 +45,9 @@ export default class FeedAdd extends Command {
     for (const data of flags.data) {
       try {
         const hash = await db.add(data);
-        this.log(`added data: '${data}' to feed '${flags.dbName}' database : ${hash}`);
+        this.log(
+          `added data: '${data}' to feed '${flags.dbName}' database : ${hash}`,
+        );
       } catch (error) {
         this.log(`Error occured while adding entry: ${error}`);
       }

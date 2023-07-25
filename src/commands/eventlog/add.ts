@@ -27,14 +27,16 @@ export default class EventlogAdd extends Command {
       multiple: true,
     }),
     failfast: Flags.boolean({
-      description: "if stop adding datas at first adding failed (default: try to add all datas)",
-      default: false
+      description:
+        "if stop adding datas at first adding failed (default: try to add all datas)",
+      default: false,
     }),
     saveonerror: Flags.boolean({
       name: "save-on-error",
-      description: "save the database even if an item has not been added (default: don't save if an error happen)",
-      default: false
-    })
+      description:
+        "save the database even if an item has not been added (default: don't save if an error happen)",
+      default: false,
+    }),
   };
 
   public async run(): Promise<void> {
@@ -57,7 +59,9 @@ export default class EventlogAdd extends Command {
       }
       try {
         const hash = await db.add(data);
-        this.log(`added data: '${data}' to eventlog '${flags.dbName}' database : ${hash}`);
+        this.log(
+          `added data: '${data}' to eventlog '${flags.dbName}' database : ${hash}`,
+        );
       } catch (error) {
         isError = true;
         this.log(`Error occured while adding entry ${data}: ${error}`);

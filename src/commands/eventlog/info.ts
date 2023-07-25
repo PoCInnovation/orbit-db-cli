@@ -33,15 +33,15 @@ export default class EventlogInfo extends Command {
       );
     }
 
-    const db = await openDB(orbitdb, dbAdress, "eventlog")
-    this.log('--- Database informations ---\n')
-    this.log(`Name: ${db.dbname}`)
-    this.log(`Type: ${db._type}`)
-    this.log(`Adress: ${db.address.toString()}`)
-    this.log(`Owner: ${db.id}`)
-    this.log(`Data file: ./${db._cache.path}`)
-    this.log(`Entries: ${db._oplog.length}`)
-    this.log(`Write-Access: ${db.access.write}`)
+    const db = await openDB(orbitdb, dbAdress, "eventlog");
+    this.log("--- Database informations ---\n");
+    this.log(`Name: ${db.dbname}`);
+    this.log(`Type: ${db._type}`);
+    this.log(`Adress: ${db.address.toString()}`);
+    this.log(`Owner: ${db.id}`);
+    this.log(`Data file: ./${db._cache.path}`);
+    this.log(`Entries: ${db._oplog.length}`);
+    this.log(`Write-Access: ${db.access.write}`);
 
     await db.close();
     await stopOrbitDB(orbitdb);

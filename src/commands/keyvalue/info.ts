@@ -10,7 +10,7 @@ export default class KeyValueInfo extends Command {
   static description = "Show informations about a keyvalue type database";
 
   static examples: Command.Example[] = [
-    "<%= config.bin %> <%= command.id %> --name=myKeyValueDbName --file=myFile",
+    "<%= config.bin %> <%= command.id %> --name=myKeyValueDbName",
   ];
 
   static flags = {

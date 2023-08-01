@@ -8,6 +8,15 @@ export const repoPath =
 const conf = {
   // silent: true,
   start: false,
+  relay: {
+    enabled: true, // enable circuit relay dialer and listener
+    hop: {
+      enabled: true // enable circuit relay HOP (make this node a relay)
+    }
+  },
+  EXPERIMENTAL: {
+    pubsub: true,
+  },
   config: {
     Addresses: {
       API: "/ip4/127.0.0.1/tcp/0",

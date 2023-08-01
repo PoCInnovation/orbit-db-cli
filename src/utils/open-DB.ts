@@ -58,5 +58,6 @@ const openDB = async (
   try {
     await db.loadFromSnapshot();
   } catch (_) {}
+  await db.load()
   return db;
 };

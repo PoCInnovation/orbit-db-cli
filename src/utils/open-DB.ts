@@ -17,9 +17,6 @@ const defaultOpenDBOptions = {
 }
 
 /**
-* @brief Open a DB
-*
-/**
  * @brief Open a DB
  *
  * @param orbitdb the orbitdb instance (src/services/start-OrbitDB.ts)

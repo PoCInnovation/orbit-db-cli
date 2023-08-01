@@ -1,7 +1,7 @@
-import { ipfsConfig, repoPath } from './config';
+import { ipfsConfig, repoPath } from "./config";
 
 // defaultRepoPath: string
-const defaultRepoPath = repoPath || './ipfs/';
+const defaultRepoPath = repoPath || "./ipfs/";
 
 const getLoadCodec = async () => {
   const dagCbor = await import("@ipld/dag-cbor");
@@ -9,9 +9,9 @@ const getLoadCodec = async () => {
   const raw = await import("multiformats/codecs/raw");
 
   // nameOrCode: string | number
-  const loadCodec = (nameOrCode) => {
+  const loadCodec = (nameOrCode: string | number) => {
     // codecs: Record<string, any>
-    const codecs = {
+    const codecs: Record<string, any> = {
       [dagPb.name]: dagPb,
       [dagPb.code]: dagPb,
       [dagCbor.name]: dagCbor,
@@ -22,25 +22,30 @@ const getLoadCodec = async () => {
     if (codecs[nameOrCode]) {
       return codecs[nameOrCode];
     }
+
     throw new Error(`Could not load codec for ${nameOrCode}`);
   };
+
   return loadCodec;
 };
 
-
 // return: Promise<IPFS>
-const startIpfs = async (start) => {
+const startIpfs = async (start: boolean): Promise<any> => {
   try {
-    const { BlockstoreDatastoreAdapter } = await import("blockstore-datastore-adapter");
+    const { BlockstoreDatastoreAdapter } = await import(
+      "blockstore-datastore-adapter"
+    );
     const { createRepo } = await import("ipfs-repo");
     const { LevelDatastore } = await import("datastore-level");
     const loadCodec = await getLoadCodec();
     const repo = createRepo(defaultRepoPath, loadCodec, {
-      root: new LevelDatastore(defaultRepoPath + '/root'),
-      blocks: new BlockstoreDatastoreAdapter(new LevelDatastore(defaultRepoPath + '/blocks')),
-      keys: new LevelDatastore(defaultRepoPath + '/keys'),
-      datastore: new LevelDatastore(defaultRepoPath + '/datastore'),
-      pins: new LevelDatastore(defaultRepoPath + '/pins'),
+      root: new LevelDatastore(defaultRepoPath + "/root"),
+      blocks: new BlockstoreDatastoreAdapter(
+        new LevelDatastore(defaultRepoPath + "/blocks") as any,
+      ),
+      keys: new LevelDatastore(defaultRepoPath + "/keys"),
+      datastore: new LevelDatastore(defaultRepoPath + "/datastore"),
+      pins: new LevelDatastore(defaultRepoPath + "/pins"),
     });
 
     const ipfsConf = ipfsConfig;
@@ -55,9 +60,9 @@ const startIpfs = async (start) => {
     });
     return ipfs;
   } catch (error) {
-    console.error('Error initializing IPFS node:', error);
-    throw new Error('A problem occured when starting ipfs');
+    console.error("Error initializing IPFS node:", error);
+    throw new Error("A problem occured when starting ipfs");
   }
-}
+};
 
 export { startIpfs };

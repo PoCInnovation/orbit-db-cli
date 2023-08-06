@@ -42,12 +42,16 @@ export default class FeedDel extends Command {
     }
 
     const db = await openDB(orbitdb, dbAdress, "feed");
-    flags.entries.forEach(async (entry) => {
-      await db.del(entry);
-      this.log(
-        `deleted entry number ${entry} from feed '${flags.dbName}' database`,
-      );
-    });
+    for (const entry of flags.entries) {
+      try {
+        await db.del(entry);
+        this.log(
+          `deleted entry number ${entry} from feed '${flags.dbName}' database`,
+        );
+      } catch (error) {
+        this.log(`Error occured while deleting entry: ${error}`);
+      }
+    }
     await saveDB(db);
     await db.close();
     await stopOrbitDB(orbitdb);

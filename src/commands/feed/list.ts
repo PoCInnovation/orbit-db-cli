@@ -6,8 +6,8 @@ import { openDB } from "../../utils/open-DB";
 import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
 import { saveDB } from "../../utils/save-DB";
 
-export default class FeedAdd extends Command {
-  static description = "Add a file to a feed type database";
+export default class FeedList extends Command {
+  static description = "Show informations about a feed type database";
 
   static examples: Command.Example[] = [
     "<%= config.bin %> <%= command.id %> --name=myFeedDbName --file=myFile",
@@ -20,17 +20,16 @@ export default class FeedAdd extends Command {
       description: "name of the database",
       required: true,
     }),
+
     // flag with a value (-n VALUE, --name=VALUE)
-    data: Flags.string({
-      char: "f",
-      description: "file to add into db",
-      required: true,
-      multiple: true,
+    limit: Flags.integer({
+      char: "l",
+      description: "number of entries you want to query",
     }),
   };
 
   public async run(): Promise<void> {
-    const { flags } = await this.parse(FeedAdd);
+    const { flags } = await this.parse(FeedList);
     const orbitdb = await startOrbitDB(true);
     const dbAdress = await resolveDBIdByName(orbitdb, flags.dbName, "feed");
     const DBExists = await doesDBExists(orbitdb, dbAdress);
@@ -42,15 +41,16 @@ export default class FeedAdd extends Command {
     }
 
     const db = await openDB(orbitdb, dbAdress, "feed");
-    for (const data of flags.data) {
-      try {
-        const hash = await db.add(data);
-        this.log(
-          `added data: '${data}' to feed '${flags.dbName}' database : ${hash}`,
-        );
-      } catch (error) {
-        this.log(`Error occured while adding entry: ${error}`);
+    const entries = db
+      .iterator({ limit: flags.limit || -1, reverse: true })
+      .collect();
+    if (entries.length > 0) {
+      this.log(`--- Database last ${entries.length} entries ---`);
+      for (const entry of entries) {
+        this.log(`${JSON.stringify(entry.payload.value, null, 2)}`);
       }
+    } else {
+      this.log(`Database ${db.dbname} is empty`);
     }
     await saveDB(db);
     await db.close();

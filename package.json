@@ -54,11 +54,13 @@
       "@oclif/plugin-plugins",
       "@oclif/plugin-autocomplete"
     ],
-    "topicSeparator": " ",
+    "topicSeparator": ":",
     "topics": {
-      "hello": {
-        "description": "Say hello to the world and others"
-      }
+      "feed": { "description": "Feed related commands" },
+      "keyvalue": { "description": "Key value related commands" },
+      "eventlog": { "description": "Event log related commands" },
+      "counter": { "description": "Counter related commands" },
+      "docstore": { "description": "Document store related commands" }
     }
   },
   "scripts": {

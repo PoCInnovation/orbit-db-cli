@@ -1422,6 +1422,17 @@
     supports-color "^8.1.1"
     tslib "^2"
 
+"@oclif/color@^1.0.9":
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/@oclif/color/-/color-1.0.10.tgz#e83e3a30fffc93076281398cbeaa4f761c4df09e"
+  integrity sha512-INWEDAL3SzzR3pIhkrqk22HV6JravLUeRZXAIpoQqIeLReauaibCVcNTzOlt0z0S8YrqRhksc54ZxZC4Oa8xBw==
+  dependencies:
+    ansi-styles "^4.2.1"
+    chalk "^4.1.0"
+    strip-ansi "^6.0.1"
+    supports-color "^8.1.1"
+    tslib "^2"
+
 "@oclif/core@^1.20.3", "@oclif/core@^1.20.4":
   version "1.25.0"
   resolved "https://registry.yarnpkg.com/@oclif/core/-/core-1.25.0.tgz#a3891f903bf211ce1f3c8a05419b686f02c5bbd6"
@@ -1548,6 +1559,15 @@
   integrity sha512-0J3oowPURZJ4Dn1p1WpQ46E4+CoV20KTn1cvsNiDl6Hmbw+qoljKQnArJJzNFeZQxWo4R7/S42PrzKJTVYh68Q==
   dependencies:
     "@oclif/core" "^2.8.0"
+
+"@oclif/plugin-not-found@^2.3.36":
+  version "2.3.36"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-not-found/-/plugin-not-found-2.3.36.tgz#c274fb07f1310e636fb7059a414ae21406da53a6"
+  integrity sha512-YMXvSpXOo13S3gNA8+0uJR6DoRQ+Bbxs06VnFpJST39RnZy51XyIAn3PYaIo6iyGoDCg+MqL+txLmhWlRLEn+w==
+  dependencies:
+    "@oclif/color" "^1.0.9"
+    "@oclif/core" "^2.11.7"
+    fast-levenshtein "^3.0.0"
 
 "@oclif/plugin-not-found@^2.3.7":
   version "2.3.9"

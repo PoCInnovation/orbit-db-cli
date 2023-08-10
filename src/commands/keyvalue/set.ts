@@ -6,11 +6,11 @@ import { openDB } from "../../utils/open-DB";
 import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
 import { saveDB } from "../../utils/save-DB";
 
-export default class KeyValueAdd extends Command {
-  static description = "Add a file to a keyvalue type database";
+export default class KeyValueSet extends Command {
+  static description = "Set a key,value pair to a keyvalue type database";
 
   static examples: Command.Example[] = [
-    "<%= config.bin %> <%= command.id %> --name=myKeyValueDbName --file=myFile",
+    "<%= config.bin %> <%= command.id %> --name=myKeyValueDbName -k keyname -v abc",
   ];
 
   static flags = {
@@ -29,12 +29,12 @@ export default class KeyValueAdd extends Command {
     // flag with a value (-v VALUE, --value=VALUE)
     value: Flags.string({
       char: 'v',
-      description: "value to add into key entry",
+      description: "value to set into key entry",
     })
   };
 
   public async run(): Promise<void> {
-    const { flags } = await this.parse(KeyValueAdd);
+    const { flags } = await this.parse(KeyValueSet);
     const orbitdb = await startOrbitDB(true);
     const dbAdress = await resolveDBIdByName(orbitdb, flags.dbName, "keyvalue");
     const DBExists = await doesDBExists(orbitdb, dbAdress);
@@ -49,14 +49,14 @@ export default class KeyValueAdd extends Command {
     if (flags.value !== undefined) {
       try {
         await db.put(flags.key, flags.value);
-        this.log(`added value: '${flags.value}' to key '${flags.key}' of ${flags.dbName} database`);
+        this.log(`set value: '${flags.value}' to key '${flags.key}' of ${flags.dbName} database`);
       } catch (error) {
         this.log(`An Error occured while adding ${flags.value} value to key ${flags.key}: ${error}`);
       }
     } else {
       try {
         await db.put(flags.key, null)
-        this.log(`added key: "${flags.key}" to ${flags.dbName} database`)
+        this.log(`set key: "${flags.key}" to ${flags.dbName} database`)
       } catch (error) {
         this.log(`An Error occured while adding key ${flags.key}: ${error}`)
       }

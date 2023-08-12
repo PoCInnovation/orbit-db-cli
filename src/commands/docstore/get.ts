@@ -40,9 +40,9 @@ export default class DocstoreGet extends Command {
     }
     const db = await openDB(orbitdb, dbAdress, "docstore");
 
-    const values = db.get(flags.key)
+    const values = db.get(flags.key);
     if (values === undefined || values.length === 0) {
-      this.error(`key ${flags.key} does not exist on db ${flags.dbName}`)
+      this.error(`key ${flags.key} does not exist on db ${flags.dbName}`);
     }
     for (const value of values) {
       this.log(`${value.content}`);

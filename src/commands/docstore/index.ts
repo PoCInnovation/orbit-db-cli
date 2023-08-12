@@ -1,7 +1,8 @@
 import { Command } from "@oclif/core";
 
 export default class KeyValue extends Command {
-  static description = "Docstore type database related commands (see examples below)";
+  static description =
+    "Docstore type database related commands (see examples below)";
 
   static examples = ["<%= config.bin %> <%= command.id %> --help"];
 

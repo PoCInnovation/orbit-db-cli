@@ -58,9 +58,9 @@ export default class DocStoreDrop extends Command {
     const dbCachePath = path.join(
       "./",
       db._cache.path +
-      "/" +
-      db.address.toString().replace("/orbitdb/", "") +
-      ".orbitdb",
+        "/" +
+        db.address.toString().replace("/orbitdb/", "") +
+        ".orbitdb",
     );
 
     this.log(`droping database name: ${name} ...`);

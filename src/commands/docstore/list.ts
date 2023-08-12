@@ -34,9 +34,9 @@ export default class DocStoreList extends Command {
     }
     const db = await openDB(orbitdb, dbAdress, "docstore");
 
-    const values = db.get('')
+    const values = db.get("");
     if (values === undefined || values.length === 0) {
-      return
+      return;
     }
     for (const value of values) {
       this.log(`${value._id}`);

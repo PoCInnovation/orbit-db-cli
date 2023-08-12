@@ -10,7 +10,7 @@ export default class DocStoreDel extends Command {
   static description = "Delete a file to a docstore type database";
 
   static examples: Command.Example[] = [
-    "<%= config.bin %> <%= command.id %> --name=myDocstoreDbName --file=myFile",
+    "<%= config.bin %> <%= command.id %> --name=myDocstoreDbName -k keyname",
   ];
 
   static flags = {

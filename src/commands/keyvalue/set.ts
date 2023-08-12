@@ -28,9 +28,9 @@ export default class KeyValueSet extends Command {
     }),
     // flag with a value (-v VALUE, --value=VALUE)
     value: Flags.string({
-      char: 'v',
+      char: "v",
       description: "value to set into key entry",
-    })
+    }),
   };
 
   public async run(): Promise<void> {
@@ -49,16 +49,20 @@ export default class KeyValueSet extends Command {
     if (flags.value !== undefined) {
       try {
         await db.put(flags.key, flags.value);
-        this.log(`set value: '${flags.value}' to key '${flags.key}' of ${flags.dbName} database`);
+        this.log(
+          `set value: '${flags.value}' to key '${flags.key}' of ${flags.dbName} database`,
+        );
       } catch (error) {
-        this.log(`An Error occured while adding ${flags.value} value to key ${flags.key}: ${error}`);
+        this.log(
+          `An Error occured while adding ${flags.value} value to key ${flags.key}: ${error}`,
+        );
       }
     } else {
       try {
-        await db.put(flags.key, null)
-        this.log(`set key: "${flags.key}" to ${flags.dbName} database`)
+        await db.put(flags.key, null);
+        this.log(`set key: "${flags.key}" to ${flags.dbName} database`);
       } catch (error) {
-        this.log(`An Error occured while adding key ${flags.key}: ${error}`)
+        this.log(`An Error occured while adding key ${flags.key}: ${error}`);
       }
     }
 

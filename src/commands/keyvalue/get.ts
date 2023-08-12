@@ -40,9 +40,9 @@ export default class KeyValueGet extends Command {
     }
     const db = await openDB(orbitdb, dbAdress, "keyvalue");
 
-    const value = db.get(flags.key)
+    const value = db.get(flags.key);
     if (value === undefined) {
-      this.error(`key ${flags.key} does not exist on db ${flags.dbName}`)
+      this.error(`key ${flags.key} does not exist on db ${flags.dbName}`);
     }
     this.log(`${JSON.stringify(value, null, 2)}`);
 

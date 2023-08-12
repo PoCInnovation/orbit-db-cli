@@ -4,10 +4,9 @@ import { stopOrbitDB } from "../../services/stop-OrbitDB";
 import { doesDBExists } from "../../utils/does-DBExists";
 import { openDB } from "../../utils/open-DB";
 import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
-import { saveDB } from "../../utils/save-DB";
 
-export default class KeyValueDel extends Command {
-  static description = "Delete a key,value pair to a keyvalue type database";
+export default class KeyValueGet extends Command {
+  static description = "Get a value by its key from a keyvalue type database";
 
   static examples: Command.Example[] = [
     "<%= config.bin %> <%= command.id %> --name=myKeyValueDbName -k keyname",
@@ -20,17 +19,16 @@ export default class KeyValueDel extends Command {
       description: "name of the database",
       required: true,
     }),
-    // flag with a value (-n VALUE, --name=VALUE)
-    keys: Flags.integer({
+    // flag with a value (-k VALUE, --key=VALUE)
+    key: Flags.string({
       char: "k",
-      description: "specify the keys of the entries you want to delete",
+      description: "key of the entry",
       required: true,
-      multiple: true,
     }),
   };
 
   public async run(): Promise<void> {
-    const { flags } = await this.parse(KeyValueDel);
+    const { flags } = await this.parse(KeyValueGet);
     const orbitdb = await startOrbitDB(true);
     const dbAdress = await resolveDBIdByName(orbitdb, flags.dbName, "keyvalue");
     const DBExists = await doesDBExists(orbitdb, dbAdress);
@@ -40,19 +38,14 @@ export default class KeyValueDel extends Command {
         `database '${flags.dbName}' (or '${dbAdress}') does not exist`,
       );
     }
-
     const db = await openDB(orbitdb, dbAdress, "keyvalue");
-    for (const key of flags.keys) {
-      try {
-        await db.del(key);
-        this.log(
-          `deleted entry: ${key} from keyvalue '${flags.dbName}' database`,
-        );
-      } catch (error) {
-        this.log(`Error occured while deleting entry: ${error}`);
-      }
+
+    const value = db.get(flags.key)
+    if (value === undefined) {
+      this.error(`key ${flags.key} does not exist on db ${flags.dbName}`)
     }
-    await saveDB(db);
+    this.log(`${JSON.stringify(value, null, 2)}`);
+
     await db.close();
     await stopOrbitDB(orbitdb);
   }

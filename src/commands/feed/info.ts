@@ -10,7 +10,7 @@ export default class FeedInfo extends Command {
   static description = "Show informations about a feed type database";
 
   static examples: Command.Example[] = [
-    "<%= config.bin %> <%= command.id %> --name=myFeedDbName --file=myFile",
+    "<%= config.bin %> <%= command.id %> --name=myFeedDbName",
   ];
 
   static flags = {

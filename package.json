@@ -20,6 +20,7 @@
     "@ipld/dag-cbor": "^9.0.2",
     "@ipld/dag-pb": "^4.0.3",
     "@oclif/core": "^2",
+    "@oclif/plugin-autocomplete": "^2.3.6",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-plugins": "^2.4.7",
     "blockstore-datastore-adapter": "^5.0.0",
@@ -50,13 +51,16 @@
     "commands": "./dist/commands",
     "plugins": [
       "@oclif/plugin-help",
-      "@oclif/plugin-plugins"
+      "@oclif/plugin-plugins",
+      "@oclif/plugin-autocomplete"
     ],
-    "topicSeparator": " ",
+    "topicSeparator": ":",
     "topics": {
-      "hello": {
-        "description": "Say hello to the world and others"
-      }
+      "feed": { "description": "Feed related commands" },
+      "keyvalue": { "description": "Key value related commands" },
+      "eventlog": { "description": "Event log related commands" },
+      "counter": { "description": "Counter related commands" },
+      "docstore": { "description": "Document store related commands" }
     }
   },
   "scripts": {

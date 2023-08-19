@@ -1,4 +1,4 @@
-import { Command, Flags } from "@oclif/core";
+import { Command, Flags, ux } from "@oclif/core";
 import { startOrbitDB } from "../../services/start-OrbitDB";
 import { stopOrbitDB } from "../../services/stop-OrbitDB";
 import { doesDBExists } from "../../utils/does-DBExists";
@@ -42,14 +42,13 @@ export default class DocStoreDel extends Command {
     }
 
     const db = await openDB(orbitdb, dbAdress, "docstore");
-    for (const keys of flags.entries) {
+    for (const key of flags.keys) {
+      ux.action.start(`Deleting entry: ${key} from docstore '${flags.dbName}' database`);
       try {
-        await db.del(keys);
-        this.log(
-          `deleted entry: ${keys} from docstore '${flags.dbName}' database`,
-        );
+        await db.del(key);
+        ux.action.stop();
       } catch (error) {
-        this.log(`Error occured while deleting entry: ${error}`);
+        ux.action.stop(`Error occured while deleting entry: ${error}`);
       }
     }
     await saveDB(db);

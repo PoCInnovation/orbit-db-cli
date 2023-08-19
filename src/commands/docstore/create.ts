@@ -29,11 +29,10 @@ export default class DocStoreCreate extends Command {
     const { flags } = await this.parse(DocStoreCreate);
     const orbitdb = await startOrbitDB(true);
 
-    this.log(`creating database name: ${flags.name} ...`);
     const db = await createDB(orbitdb, flags.name, "docstore", {
       overwrite: flags.force,
     });
-    this.log(`created database: ${db.address}`);
+    db.close();
     await stopOrbitDB(orbitdb);
   }
 }

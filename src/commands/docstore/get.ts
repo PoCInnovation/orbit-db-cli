@@ -1,4 +1,4 @@
-import { Command, Flags } from "@oclif/core";
+import { Command, Flags, ux } from "@oclif/core";
 import { startOrbitDB } from "../../services/start-OrbitDB";
 import { stopOrbitDB } from "../../services/stop-OrbitDB";
 import { doesDBExists } from "../../utils/does-DBExists";
@@ -40,10 +40,14 @@ export default class DocstoreGet extends Command {
     }
     const db = await openDB(orbitdb, dbAdress, "docstore");
 
+    ux.action.start(`Getting value: ${flags.key} from docstore '${flags.dbName}' database`);
     const values = db.get(flags.key);
     if (values === undefined || values.length === 0) {
+      ux.action.stop("Failed");
       this.error(`key ${flags.key} does not exist on db ${flags.dbName}`);
     }
+    ux.action.stop();
+
     for (const value of values) {
       this.log(`${value.content}`);
     }

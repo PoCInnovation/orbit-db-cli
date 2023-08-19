@@ -1,3 +1,4 @@
+import { ux } from "@oclif/core";
 import { defaultDatabaseDir } from "../services/config";
 
 type DBType = "feed" | "counter" | "eventlog" | "docstore" | "keyvalue";
@@ -40,9 +41,16 @@ const createDB = async (
     options.directory = defaultCreateDBOptions.directory;
   }
 
-  const db = await orbitdb.create(name, type, {
-    overwrite: options.overwrite,
-    directory: options.directory,
-  });
-  return db;
+  ux.action.start(`Creating ${type} DB ${name}`);
+  try {
+    const db = await orbitdb.create(name, type, {
+      overwrite: options.overwrite,
+      directory: options.directory,
+    });
+    ux.action.stop();
+    return db;
+  } catch (error) {
+    ux.action.stop("Failed");
+    throw new Error("An error occured while creating DB");
+  }
 };

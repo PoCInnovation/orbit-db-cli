@@ -4,6 +4,7 @@ import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
 import { openDB } from "../../utils/open-DB";
 import { saveDB } from "../../utils/save-DB";
 import { Command, Flags } from "@oclif/core";
+import { doesDBExists } from "../../utils/does-DBExists";
 
 export default class CounterInc extends Command {
   static description = "Increment a counter type database";
@@ -31,6 +32,12 @@ export default class CounterInc extends Command {
     const { flags } = await this.parse(CounterInc);
     const orbitdb = await startOrbitDB(true);
     const name = await resolveDBIdByName(orbitdb, flags.name, "counter");
+    const DBExists = await doesDBExists(orbitdb, name);
+
+    if (!DBExists) {
+      this.error(`database '${flags.name}' (or '${name}') does not exist`);
+    }
+
     const db = await openDB(orbitdb, name, "counter");
 
     if (flags.amount < 1) {

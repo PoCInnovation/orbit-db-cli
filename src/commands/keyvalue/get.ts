@@ -1,4 +1,4 @@
-import { Command, Flags } from "@oclif/core";
+import { Command, Flags, ux } from "@oclif/core";
 import { startOrbitDB } from "../../services/start-OrbitDB";
 import { stopOrbitDB } from "../../services/stop-OrbitDB";
 import { doesDBExists } from "../../utils/does-DBExists";
@@ -40,11 +40,14 @@ export default class KeyValueGet extends Command {
     }
     const db = await openDB(orbitdb, dbAdress, "keyvalue");
 
+    ux.action.start(`Getting value: ${flags.key} from keyvalue '${flags.dbName}' database`);
     const value = db.get(flags.key);
     if (value === undefined) {
+      ux.action.stop("Failed");
       this.error(`key ${flags.key} does not exist on db ${flags.dbName}`);
     }
-    this.log(`${JSON.stringify(value, null, 2)}`);
+    ux.action.stop();
+    this.log(`${value}`);
 
     await db.close();
     await stopOrbitDB(orbitdb);

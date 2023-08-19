@@ -1,4 +1,4 @@
-import { Command, Flags } from "@oclif/core";
+import { Command, Flags, ux } from "@oclif/core";
 import { readFile } from "fs";
 import { startOrbitDB } from "../../services/start-OrbitDB";
 import { stopOrbitDB } from "../../services/stop-OrbitDB";
@@ -50,29 +50,36 @@ export default class DocStorePut extends Command {
 
     if (flags.document !== undefined) {
       try {
+        ux.action.start(`Reading content of file: ${flags.document}`);
         const fileContent: Buffer = await new Promise((resolve, reject) => {
           readFile(flags.document ?? "", (err, data) => {
             if (err) reject(err);
             else resolve(data);
           });
         });
+        ux.action.stop();
         const doc = { _id: flags.key, content: fileContent.toString("utf-8") };
-        await db.put(doc);
-        this.log(
-          `added file content of '${flags.document}' to key '${flags.key}' of ${flags.dbName} database`,
-        );
+        ux.action.start(`Adding file content of '${flags.document}' to key '${flags.key}' of ${flags.dbName} database`);
+        try {
+          await db.put(doc);
+          ux.action.stop();
+        } catch (error) {
+          ux.action.stop("Failed");
+          this.error(`Error occured while adding file content of ${flags.document} to key ${flags.key}: ${error}`);
+        }
       } catch (error) {
-        this.log(
-          `An Error occured while adding ${flags.document} value to key ${flags.key}: ${error}`,
-        );
+        ux.action.stop("Failed");
+        this.error(`Error occured while reading file: ${error}`);
       }
     } else {
+      ux.action.start(`Adding file content of '${flags.document}' to key '${flags.key}' of ${flags.dbName} database`);
       try {
         const doc = { _id: flags.key, content: null };
         await db.put(doc);
-        this.log(`added key: "${flags.key}" to ${flags.dbName} database`);
+        ux.action.stop();
       } catch (error) {
-        this.log(`An Error occured while adding key ${flags.key}: ${error}`);
+        ux.action.stop("Failed");
+        this.error(`An Error occured while adding key ${flags.key}: ${error}`);
       }
     }
 

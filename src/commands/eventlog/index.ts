@@ -11,6 +11,6 @@ export default class Eventlog extends Command {
   static args = {};
 
   public async run(): Promise<void> {
-    this.error("try 'eventlog --help' for more information");
+    this.error("try with flag '--help' for more information");
   }
 }

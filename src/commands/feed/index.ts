@@ -10,6 +10,6 @@ export default class Feed extends Command {
   static args = {};
 
   public async run(): Promise<void> {
-    this.error("try 'feed --help' for more information");
+    this.error("try with flag '--help' for more information");
   }
 }

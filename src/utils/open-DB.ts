@@ -1,3 +1,4 @@
+import { ux } from "@oclif/core";
 import { DBType } from "./create-DB";
 
 export { openDB, OpenDBOptions };
@@ -48,15 +49,24 @@ const openDB = async (
     options.sync = defaultOpenDBOptions.sync;
   }
 
-  const db = await orbitdb.open(name, {
-    type,
-    replicate: options.replicate,
-    create: options.create,
-    localOnly: options.localOnly,
-    sync: options.sync,
-  });
+  ux.action.start(`Opening ${type} DB ${name}`);
   try {
-    await db.loadFromSnapshot();
-  } catch (_) {}
-  return db;
+    const db = await orbitdb.open(name, {
+      type,
+      replicate: options.replicate,
+      create: options.create,
+      localOnly: options.localOnly,
+      sync: options.sync,
+    });
+    ux.action.stop();
+    ux.action.start('Loading last snapshot');
+    try {
+      await db.loadFromSnapshot();
+    } catch (_) {}
+    ux.action.stop();
+    return db;
+  } catch (error) {
+    ux.action.stop("Failed");
+    throw new Error("An error occured while opening DB");
+  }
 };

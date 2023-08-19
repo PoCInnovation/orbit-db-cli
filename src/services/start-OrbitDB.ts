@@ -1,7 +1,9 @@
 import { defaultDatabaseDir } from "./config";
+import { ux } from "@oclif/core";
 
 // return: OrbitDB
 const startOrbitDB = async (offline = true): Promise<any> => {
+  ux.action.start("Starting OrbitDB");
   const { startIpfs } = await import("./start-ipfs.js");
   try {
     const ipfs = await startIpfs(!offline);
@@ -15,8 +17,10 @@ const startOrbitDB = async (offline = true): Promise<any> => {
       directory,
       id: peerId,
     });
+    ux.action.stop();
     return orbitdb;
   } catch (error) {
+    ux.action.stop("Failed:");
     console.error("An error occured while starting OrbitDB", error);
     throw new Error("An error occured while starting OrbitDB");
   }

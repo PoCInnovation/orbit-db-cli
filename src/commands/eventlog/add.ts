@@ -1,4 +1,4 @@
-import { Command, Flags } from "@oclif/core";
+import { Command, Flags, ux } from "@oclif/core";
 import { startOrbitDB } from "../../services/start-OrbitDB";
 import { stopOrbitDB } from "../../services/stop-OrbitDB";
 import { doesDBExists } from "../../utils/does-DBExists";
@@ -57,14 +57,14 @@ export default class EventlogAdd extends Command {
       if (isError === true && flags.failfast === true) {
         break;
       }
+      ux.action.start(`Adding data: ${data} to eventlog '${flags.dbName}' database`);
       try {
         const hash = await db.add(data);
-        this.log(
-          `added data: '${data}' to eventlog '${flags.dbName}' database : ${hash}`,
-        );
+        ux.action.stop(`hash: ${hash}`);
       } catch (error) {
         isError = true;
-        this.log(`Error occured while adding entry ${data}: ${error}`);
+        ux.action.stop(`Error occured while adding entry ${data}: ${error}`);
+        this.log();
       }
     }
     if (isError === false || flags.saveonerror === true) {

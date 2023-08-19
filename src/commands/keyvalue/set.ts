@@ -1,4 +1,4 @@
-import { Command, Flags } from "@oclif/core";
+import { Command, Flags, ux } from "@oclif/core";
 import { startOrbitDB } from "../../services/start-OrbitDB";
 import { stopOrbitDB } from "../../services/stop-OrbitDB";
 import { doesDBExists } from "../../utils/does-DBExists";
@@ -47,22 +47,20 @@ export default class KeyValueSet extends Command {
     const db = await openDB(orbitdb, dbAdress, "keyvalue");
 
     if (flags.value !== undefined) {
+      ux.action.start(`Setting value: '${flags.value}' to key '${flags.key}' of ${flags.dbName} database`);
       try {
         await db.put(flags.key, flags.value);
-        this.log(
-          `set value: '${flags.value}' to key '${flags.key}' of ${flags.dbName} database`,
-        );
+        ux.action.stop();
       } catch (error) {
-        this.log(
-          `An Error occured while adding ${flags.value} value to key ${flags.key}: ${error}`,
-        );
+        ux.action.stop(`Error occured while setting value: ${error}`);
       }
     } else {
+      ux.action.start(`Setting key: "${flags.key}" to ${flags.dbName} database`);
       try {
         await db.put(flags.key, null);
-        this.log(`set key: "${flags.key}" to ${flags.dbName} database`);
+        ux.action.stop();
       } catch (error) {
-        this.log(`An Error occured while adding key ${flags.key}: ${error}`);
+        ux.action.stop(`An Error occured while adding key ${flags.key}: ${error}`);
       }
     }
 

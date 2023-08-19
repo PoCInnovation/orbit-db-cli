@@ -1,4 +1,4 @@
-import { Command, Flags } from "@oclif/core";
+import { Command, Flags, ux } from "@oclif/core";
 import { startOrbitDB } from "../../services/start-OrbitDB";
 import { stopOrbitDB } from "../../services/stop-OrbitDB";
 import { doesDBExists } from "../../utils/does-DBExists";
@@ -43,15 +43,15 @@ export default class FeedDel extends Command {
 
     const db = await openDB(orbitdb, dbAdress, "feed");
     for (const entry of flags.entries) {
+      ux.action.start(`Deleting entry: ${entry} from feed '${flags.dbName}' database`);
       try {
         await db.del(entry);
-        this.log(
-          `deleted entry number ${entry} from feed '${flags.dbName}' database`,
-        );
+        ux.action.stop();
       } catch (error) {
-        this.log(`Error occured while deleting entry: ${error}`);
+        ux.action.stop(`Error occured while deleting entry: ${error}`);
       }
     }
+
     await saveDB(db);
     await db.close();
     await stopOrbitDB(orbitdb);

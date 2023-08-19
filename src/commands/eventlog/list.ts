@@ -1,10 +1,9 @@
-import { Command, Flags } from "@oclif/core";
+import { Command, Flags, ux } from "@oclif/core";
 import { startOrbitDB } from "../../services/start-OrbitDB";
 import { stopOrbitDB } from "../../services/stop-OrbitDB";
 import { doesDBExists } from "../../utils/does-DBExists";
 import { openDB } from "../../utils/open-DB";
 import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
-import { saveDB } from "../../utils/save-DB";
 
 export default class EventlogList extends Command {
   static description = "Show informations about an eventlog type database";
@@ -42,18 +41,20 @@ export default class EventlogList extends Command {
     }
 
     const db = await openDB(orbitdb, dbAdress, "eventlog");
+    ux.action.start(`Listing entries from eventlog '${flags.dbName}' database`);
     const entries = db
       .iterator({ limit: flags.limit, reverse: true })
       .collect();
     if (entries.length > 0) {
+      ux.action.stop()
       this.log(`--- Database last ${entries.length} entries ---`);
       for (const entry of entries) {
         this.log(`${JSON.stringify(entry.payload.value, null, 2)}`);
       }
     } else {
-      this.log(`Database ${db.dbname} is empty`);
+      ux.action.stop(`No entries found`);
     }
-    await saveDB(db);
+
     await db.close();
     await stopOrbitDB(orbitdb);
   }

@@ -10,6 +10,6 @@ export default class Counter extends Command {
   static args = {};
 
   public async run(): Promise<void> {
-    this.error("try 'counter --help' for more information");
+    this.error("try with flag '--help' for more information");
   }
 }

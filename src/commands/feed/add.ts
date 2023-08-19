@@ -1,4 +1,4 @@
-import { Command, Flags } from "@oclif/core";
+import { Command, Flags, ux } from "@oclif/core";
 import { startOrbitDB } from "../../services/start-OrbitDB";
 import { stopOrbitDB } from "../../services/stop-OrbitDB";
 import { doesDBExists } from "../../utils/does-DBExists";
@@ -10,7 +10,9 @@ export default class FeedAdd extends Command {
   static description = "Add a file to a feed type database";
 
   static examples: Command.Example[] = [
-    "<%= config.bin %> <%= command.id %> --name=myFeedDbName --file=myFile",
+    "<%= config.bin %> <%= command.id %> --name=myFeedDbName --data=someData",
+    "<%= config.bin %> <%= command.id %> --name=myFeedDbName --d someData",
+    "<%= config.bin %> <%= command.id %> -n myFeedDbName -d someData",
   ];
 
   static flags = {
@@ -22,7 +24,7 @@ export default class FeedAdd extends Command {
     }),
     // flag with a value (-n VALUE, --name=VALUE)
     data: Flags.string({
-      char: "f",
+      char: "d",
       description: "file to add into db",
       required: true,
       multiple: true,
@@ -43,13 +45,12 @@ export default class FeedAdd extends Command {
 
     const db = await openDB(orbitdb, dbAdress, "feed");
     for (const data of flags.data) {
+      ux.action.start(`Adding data: ${data} to feed '${flags.dbName}' database`);
       try {
         const hash = await db.add(data);
-        this.log(
-          `added data: '${data}' to feed '${flags.dbName}' database : ${hash}`,
-        );
+        ux.action.stop(`hash: ${hash}`);
       } catch (error) {
-        this.log(`Error occured while adding entry: ${error}`);
+        ux.action.stop(`Error occured while adding entry: ${error}`);
       }
     }
     await saveDB(db);

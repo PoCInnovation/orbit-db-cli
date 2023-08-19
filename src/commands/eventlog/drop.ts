@@ -63,11 +63,11 @@ export default class EventlogDrop extends Command {
         ".orbitdb",
     );
 
-    this.log(`droping database name: ${name} ...`);
+    ux.action.start(`dropping database ${name}`);
     await db.drop();
     await db.close();
     await rm(dbCachePath, { recursive: true, force: true });
-    this.log(`droped database: ${name}`);
+    ux.action.stop();
     await stopOrbitDB(orbitdb);
   }
 }

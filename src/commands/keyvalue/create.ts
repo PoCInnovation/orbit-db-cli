@@ -29,11 +29,10 @@ export default class KeyValueCreate extends Command {
     const { flags } = await this.parse(KeyValueCreate);
     const orbitdb = await startOrbitDB(true);
 
-    this.log(`creating database name: ${flags.name} ...`);
     const db = await createDB(orbitdb, flags.name, "keyvalue", {
       overwrite: flags.force,
     });
-    this.log(`created database: ${db.address}`);
+    db.close();
     await stopOrbitDB(orbitdb);
   }
 }

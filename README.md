@@ -22,7 +22,7 @@
 
 #### eventlog
 
-`./bin/run eventlog --help`
+`orbitdb eventlog --help`
 ```man
 eventlog related commands (see examples below)
 

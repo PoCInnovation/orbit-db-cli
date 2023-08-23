@@ -20,7 +20,30 @@
 
 ### Usage
 
-[Explain how to use this project]
+#### keyvalue
+
+`./bin/run keyvalue --help`
+```man
+Keyvalue type database related commands (see examples below)
+
+USAGE
+  $ orbitdb keyvalue
+
+DESCRIPTION
+  Keyvalue type database related commands (see examples below)
+
+EXAMPLES
+  $ orbitdb keyvalue --help
+
+COMMANDS
+  keyvalue create  Create a KeyValue type database
+  keyvalue del     Delete a key,value pair to a keyvalue type database
+  keyvalue drop    Delete a keyvalue type database locally (This doesn't remove data on other nodes that have the removed
+                   database replicated.)
+  keyvalue get     Get a value by its key from a keyvalue type database
+  keyvalue info    Show informations about a keyvalue type database
+  keyvalue set     Set a key,value pair to a keyvalue type database
+```
 
 ## Get involved
 

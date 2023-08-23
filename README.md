@@ -20,7 +20,30 @@
 
 ### Usage
 
-[Explain how to use this project]
+#### feed
+
+`./bin/run feed --help`
+```man
+feed related commands (see examples below)
+
+USAGE
+  $ orbitdb feed
+
+DESCRIPTION
+  feed related commands (see examples below)
+
+EXAMPLES
+  $ orbitdb feed --help
+
+COMMANDS
+  feed add     Add a file to a feed type database
+  feed create  Create a feed type database
+  feed del     Delete a file to a feed type database
+  feed drop    Delete a feed type database locally (This doesn't remove data on other nodes that have the removed database
+               replicated.)
+  feed info    Show informations about a feed type database
+  feed list    Show informations about a feed type database
+```
 
 ## Get involved
 

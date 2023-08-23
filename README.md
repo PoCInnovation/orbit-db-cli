@@ -20,7 +20,29 @@
 
 ### Usage
 
-[Explain how to use this project]
+#### eventlog
+
+`orbitdb eventlog --help`
+```man
+eventlog related commands (see examples below)
+
+USAGE
+  $ orbitdb eventlog
+
+DESCRIPTION
+  eventlog related commands (see examples below)
+
+EXAMPLES
+  $ orbitdb eventlog --help
+
+COMMANDS
+  eventlog add     Add a data to an eventlog type database
+  eventlog create  Create an eventlog type database
+  eventlog drop    Delete a eventlog type database locally (This doesn't remove data on other nodes that have the removed
+                   database replicated.)
+  eventlog info    Show informations about an eventlog type database
+  eventlog list    Show informations about an eventlog type database
+```
 
 ## Get involved
 

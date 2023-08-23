@@ -20,7 +20,29 @@
 
 ### Usage
 
-[Explain how to use this project]
+#### counter
+
+`orbitdb counter --help`
+```man
+counter related commands (see examples below)
+
+USAGE
+  $ orbitdb counter
+
+DESCRIPTION
+  counter related commands (see examples below)
+
+EXAMPLES
+  $ orbitdb counter --help
+
+COMMANDS
+  counter create  Create a counter type database
+  counter drop    Delete a counter type database locally (This doesn't remove data on other nodes that have the removed database
+                  replicated.)
+  counter inc     Increment a counter type database
+  counter info    Show informations about a counter type database
+  counter value   Print value of a counter db
+```
 
 ## Get involved
 

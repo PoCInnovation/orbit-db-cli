@@ -1,7 +1,7 @@
 import { Command } from "@oclif/core";
 
-export default class Feed extends Command {
-  static description = "feed related commands (see examples below)";
+export default class Counter extends Command {
+  static description = "counter related commands (see examples below)";
 
   static examples = ["<%= config.bin %> <%= command.id %> --help"];
 
@@ -10,6 +10,6 @@ export default class Feed extends Command {
   static args = {};
 
   public async run(): Promise<void> {
-    this.error("try 'feed --help' for more information");
+    this.error("try 'counter --help' for more information");
   }
 }

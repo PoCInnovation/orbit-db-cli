@@ -6,6 +6,7 @@ import { Command, Flags } from "@oclif/core";
 import { doesDBExists } from "../../utils/does-DBExists";
 
 export default class CounterValue extends Command {
+  public static enableJsonFlag = true
   static description = "Print value of a counter db";
 
   static examples = [
@@ -19,11 +20,14 @@ export default class CounterValue extends Command {
       description: "name of the database",
       required: true,
     }),
+    json: Flags.boolean({
+      description: "output as JSON",
+    }),
   };
 
-  public async run(): Promise<void> {
+  public async run(): Promise<{ name: string, value: number}> {
     const { flags } = await this.parse(CounterValue);
-    const orbitdb = await startOrbitDB(true);
+    const orbitdb = await startOrbitDB(true, !flags.json);
     const name = await resolveDBIdByName(orbitdb, flags.name, "counter");
     const DBExists = await doesDBExists(orbitdb, name);
 
@@ -31,9 +35,11 @@ export default class CounterValue extends Command {
       this.error(`database '${flags.name}' (or '${name}') does not exist`);
     }
 
-    const db = await openDB(orbitdb, name, "counter");
+    const db = await openDB(orbitdb, name, "counter", { showSpinner: !flags.json });
 
-    this.log(`${db.value}`);
-    await stopOrbitDB(orbitdb);
+    const valueNow = db.value;
+    this.log(`${valueNow}`);
+    await stopOrbitDB(orbitdb, !flags.json);
+    return {"name": flags.name, "value": valueNow};
   }
 }

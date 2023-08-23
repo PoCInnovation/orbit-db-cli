@@ -9,11 +9,13 @@ export { createDB, CreateDBOptions };
 type CreateDBOptions = {
   overwrite?: boolean;
   directory?: string;
+  showSpinner?: boolean;
 };
 
 const defaultCreateDBOptions = {
   overwrite: false,
   directory: defaultDatabaseDir,
+  showSpinner: true,
 };
 
 // orbitdb: OrbitDB
@@ -40,17 +42,20 @@ const createDB = async (
   if (options.directory === undefined || options.directory === null) {
     options.directory = defaultCreateDBOptions.directory;
   }
+  if (options.showSpinner === undefined || options.showSpinner === null) {
+    options.showSpinner = defaultCreateDBOptions.showSpinner;
+  }
 
-  ux.action.start(`Creating ${type} DB ${name}`);
+  if (options.showSpinner) ux.action.start(`Creating ${type} DB ${name}`);
   try {
     const db = await orbitdb.create(name, type, {
       overwrite: options.overwrite,
       directory: options.directory,
     });
-    ux.action.stop();
+    if (options.showSpinner) ux.action.stop();
     return db;
   } catch (error) {
-    ux.action.stop("Failed");
+    if (options.showSpinner) ux.action.stop("Failed");
     throw new Error("An error occured while creating DB");
   }
 };

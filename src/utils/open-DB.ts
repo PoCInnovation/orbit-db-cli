@@ -8,6 +8,7 @@ type OpenDBOptions = {
   create?: boolean;
   localOnly?: boolean;
   sync?: boolean;
+  showSpinner?: boolean;
 };
 
 const defaultOpenDBOptions = {
@@ -15,6 +16,7 @@ const defaultOpenDBOptions = {
   create: false,
   localOnly: false,
   sync: false,
+  showSpinner: true,
 };
 
 /**
@@ -49,7 +51,11 @@ const openDB = async (
     options.sync = defaultOpenDBOptions.sync;
   }
 
-  ux.action.start(`Opening ${type} DB ${name}`);
+  if (options.showSpinner === undefined || options.showSpinner === null) {
+    options.showSpinner = defaultOpenDBOptions.showSpinner;
+  }
+
+  if (options.showSpinner) ux.action.start(`Opening ${type} DB ${name}`);
   try {
     const db = await orbitdb.open(name, {
       type,
@@ -58,15 +64,15 @@ const openDB = async (
       localOnly: options.localOnly,
       sync: options.sync,
     });
-    ux.action.stop();
-    ux.action.start('Loading last snapshot');
+    if (options.showSpinner) ux.action.stop();
+    if (options.showSpinner) ux.action.start('Loading last snapshot');
     try {
       await db.loadFromSnapshot();
     } catch (_) {}
-    ux.action.stop();
+    if (options.showSpinner) ux.action.stop();
     return db;
   } catch (error) {
-    ux.action.stop("Failed");
+    if (options.showSpinner) ux.action.stop("Failed");
     throw new Error("An error occured while opening DB");
   }
 };

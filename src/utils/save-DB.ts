@@ -7,8 +7,8 @@ export { saveDB };
  *
  * @param db the DB opened (src/utils/open-DB.ts)
  */
-const saveDB = async (db: any): Promise<void> => {
-  ux.action.start("Saving DB");
+const saveDB = async (db: any, showSpinner = true): Promise<void> => {
+  if (showSpinner) ux.action.start("Saving DB");
   await db.saveSnapshot();
-  ux.action.stop();
+  if (showSpinner) ux.action.stop();
 };

@@ -9,7 +9,7 @@ export { createDB, CreateDBOptions };
 type CreateDBOptions = {
   overwrite?: boolean;
   directory?: string;
-  showSpinner?: boolean;
+  showSpinner: boolean;
 };
 
 const defaultCreateDBOptions = {
@@ -33,7 +33,7 @@ const createDB = async (
   orbitdb: any,
   name: string,
   type: DBType,
-  options: CreateDBOptions = {},
+  options: CreateDBOptions,
 ) => {
   if (options.overwrite === undefined || options.overwrite === null) {
     options.overwrite = defaultCreateDBOptions.overwrite;

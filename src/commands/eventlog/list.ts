@@ -6,6 +6,7 @@ import { openDB } from "../../utils/open-DB";
 import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
 
 export default class EventlogList extends Command {
+  public static enableJsonFlag = true
   static description = "Show informations about an eventlog type database";
 
   static examples: Command.Example[] = [
@@ -26,11 +27,14 @@ export default class EventlogList extends Command {
       description: "number of entries you want to query",
       default: -1,
     }),
+    json: Flags.boolean({
+      description: "output as JSON",
+    })
   };
 
-  public async run(): Promise<void> {
+  public async run(): Promise<{name: string, entries: string[]}> {
     const { flags } = await this.parse(EventlogList);
-    const orbitdb = await startOrbitDB(true);
+    const orbitdb = await startOrbitDB(true, !flags.json);
     const dbAdress = await resolveDBIdByName(orbitdb, flags.dbName, "eventlog");
     const DBExists = await doesDBExists(orbitdb, dbAdress);
 
@@ -40,22 +44,27 @@ export default class EventlogList extends Command {
       );
     }
 
-    const db = await openDB(orbitdb, dbAdress, "eventlog");
-    ux.action.start(`Listing entries from eventlog '${flags.dbName}' database`);
-    const entries = db
+    const db = await openDB(orbitdb, dbAdress, "eventlog", { showSpinner: !flags.json });
+    if (!flags.json) ux.action.start(`Listing entries from eventlog '${flags.dbName}' database`);
+    const entries: { payload: { value: string } }[] = db
       .iterator({ limit: flags.limit, reverse: true })
       .collect();
+    let listValue: string[] = []
     if (entries.length > 0) {
-      ux.action.stop()
+      if (!flags.json) ux.action.stop()
       this.log(`--- Database last ${entries.length} entries ---`);
-      for (const entry of entries) {
-        this.log(`${JSON.stringify(entry.payload.value, null, 2)}`);
+      listValue = entries.map((entry) => entry.payload.value)
+      if (!flags.json) {
+        listValue.forEach((value) => {
+          this.log(` --->\n${value}`);
+        })
       }
     } else {
-      ux.action.stop(`No entries found`);
+      if (!flags.json) ux.action.stop(`No entries found`);
     }
 
     await db.close();
-    await stopOrbitDB(orbitdb);
+    await stopOrbitDB(orbitdb, !flags.json);
+    return { name: flags.dbName, entries: listValue };
   }
 }

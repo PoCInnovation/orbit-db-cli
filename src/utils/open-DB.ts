@@ -8,7 +8,7 @@ type OpenDBOptions = {
   create?: boolean;
   localOnly?: boolean;
   sync?: boolean;
-  showSpinner?: boolean;
+  showSpinner: boolean;
 };
 
 const defaultOpenDBOptions = {
@@ -33,7 +33,7 @@ const openDB = async (
   orbitdb: any,
   name: string,
   type: DBType,
-  options: OpenDBOptions = {},
+  options: OpenDBOptions,
 ) => {
   if (options.replicate === undefined || options.replicate === null) {
     options.replicate = defaultOpenDBOptions.replicate;

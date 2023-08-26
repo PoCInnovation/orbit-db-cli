@@ -7,6 +7,7 @@ import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
 import { saveDB } from "../../utils/save-DB";
 
 export default class EventlogAdd extends Command {
+  public static enableJsonFlag = true
   static description = "Add a data to an eventlog type database";
 
   static examples: Command.Example[] = [
@@ -37,11 +38,14 @@ export default class EventlogAdd extends Command {
         "save the database even if an item has not been added (default: don't save if an error happen)",
       default: false,
     }),
+    json: Flags.boolean({
+      description: "output as JSON",
+    })
   };
 
-  public async run(): Promise<void> {
+  public async run(): Promise<{name: string, added: {value: string, added: boolean}[]}> {
     const { flags } = await this.parse(EventlogAdd);
-    const orbitdb = await startOrbitDB(true);
+    const orbitdb = await startOrbitDB(true, !flags.json);
     const dbAdress = await resolveDBIdByName(orbitdb, flags.dbName, "eventlog");
     const DBExists = await doesDBExists(orbitdb, dbAdress);
 
@@ -51,26 +55,30 @@ export default class EventlogAdd extends Command {
       );
     }
 
-    const db = await openDB(orbitdb, dbAdress, "eventlog");
+    const db = await openDB(orbitdb, dbAdress, "eventlog", { showSpinner: !flags.json });
+
     let isError = false;
+    let added: {value: string, added: boolean}[] = [];
     for (const data of flags.data) {
       if (isError === true && flags.failfast === true) {
         break;
       }
-      ux.action.start(`Adding data: ${data} to eventlog '${flags.dbName}' database`);
+      if (!flags.json) ux.action.start(`Adding data: ${data} to eventlog '${flags.dbName}' database`);
       try {
         const hash = await db.add(data);
-        ux.action.stop(`hash: ${hash}`);
+        if (!flags.json) ux.action.stop(`hash: ${hash}`);
+        added.push({value: data, added: true});
       } catch (error) {
         isError = true;
-        ux.action.stop(`Error occured while adding entry ${data}: ${error}`);
-        this.log();
+        if (!flags.json) ux.action.stop(`Error occured while adding entry ${data}: ${error}`);
+        added.push({value: data, added: false});
       }
     }
     if (isError === false || flags.saveonerror === true) {
-      await saveDB(db);
+      await saveDB(db, !flags.json);
     }
     await db.close();
-    await stopOrbitDB(orbitdb);
+    await stopOrbitDB(orbitdb, !flags.json);
+    return {name: flags.dbName, added};
   }
 }

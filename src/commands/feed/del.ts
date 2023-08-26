@@ -7,6 +7,7 @@ import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
 import { saveDB } from "../../utils/save-DB";
 
 export default class FeedDel extends Command {
+  public static enableJsonFlag = true
   static description = "Delete a file to a feed type database";
 
   static examples: Command.Example[] = [
@@ -27,11 +28,14 @@ export default class FeedDel extends Command {
       required: true,
       multiple: true,
     }),
+    json: Flags.boolean({
+      description: "output as JSON",
+    })
   };
 
-  public async run(): Promise<void> {
+  public async run(): Promise<{name: string, entries: {entry: number, deleted: boolean}[]}> {
     const { flags } = await this.parse(FeedDel);
-    const orbitdb = await startOrbitDB(true);
+    const orbitdb = await startOrbitDB(true, !flags.json);
     const dbAdress = await resolveDBIdByName(orbitdb, flags.dbName, "feed");
     const DBExists = await doesDBExists(orbitdb, dbAdress);
 
@@ -41,19 +45,23 @@ export default class FeedDel extends Command {
       );
     }
 
-    const db = await openDB(orbitdb, dbAdress, "feed");
+    const db = await openDB(orbitdb, dbAdress, "feed", { showSpinner: !flags.json });
+    let entriesDel: {entry: number, deleted: boolean}[] = [];
     for (const entry of flags.entries) {
-      ux.action.start(`Deleting entry: ${entry} from feed '${flags.dbName}' database`);
+      if (!flags.json) ux.action.start(`Deleting entry: ${entry} from feed '${flags.dbName}' database`);
       try {
         await db.del(entry);
-        ux.action.stop();
+        if (!flags.json) ux.action.stop();
+        entriesDel.push({entry: entry, deleted: true});
       } catch (error) {
-        ux.action.stop(`Error occured while deleting entry: ${error}`);
+        if (!flags.json) ux.action.stop(`Error occured while deleting entry: ${error}`);
+        entriesDel.push({entry: entry, deleted: false});
       }
     }
 
-    await saveDB(db);
+    await saveDB(db, !flags.json);
     await db.close();
-    await stopOrbitDB(orbitdb);
+    await stopOrbitDB(orbitdb, !flags.json);
+    return {name: flags.dbName, entries: entriesDel};
   }
 }

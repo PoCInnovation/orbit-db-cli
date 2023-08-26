@@ -2,7 +2,7 @@ import { defaultDatabaseDir } from "./config";
 import { ux } from "@oclif/core";
 
 // return: OrbitDB
-const startOrbitDB = async (offline = true, showSpinner = true): Promise<any> => {
+const startOrbitDB = async (offline: boolean, showSpinner: boolean): Promise<any> => {
   if (showSpinner) ux.action.start("Starting OrbitDB");
   const { startIpfs } = await import("./start-ipfs.js");
   try {

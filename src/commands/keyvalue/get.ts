@@ -6,6 +6,7 @@ import { openDB } from "../../utils/open-DB";
 import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
 
 export default class KeyValueGet extends Command {
+  public static enableJsonFlag = true
   static description = "Get a value by its key from a keyvalue type database";
 
   static examples: Command.Example[] = [
@@ -25,11 +26,14 @@ export default class KeyValueGet extends Command {
       description: "key of the entry",
       required: true,
     }),
+    json: Flags.boolean({
+      description: "output as JSON",
+    })
   };
 
-  public async run(): Promise<void> {
+  public async run(): Promise<{name: string, value: string}> {
     const { flags } = await this.parse(KeyValueGet);
-    const orbitdb = await startOrbitDB(true);
+    const orbitdb = await startOrbitDB(true, !flags.json);
     const dbAdress = await resolveDBIdByName(orbitdb, flags.dbName, "keyvalue");
     const DBExists = await doesDBExists(orbitdb, dbAdress);
 
@@ -38,18 +42,19 @@ export default class KeyValueGet extends Command {
         `database '${flags.dbName}' (or '${dbAdress}') does not exist`,
       );
     }
-    const db = await openDB(orbitdb, dbAdress, "keyvalue");
+    const db = await openDB(orbitdb, dbAdress, "keyvalue", { showSpinner: !flags.json });
 
-    ux.action.start(`Getting value: ${flags.key} from keyvalue '${flags.dbName}' database`);
+    if (!flags.json) ux.action.start(`Getting value: ${flags.key} from keyvalue '${flags.dbName}' database`);
     const value = db.get(flags.key);
     if (value === undefined) {
-      ux.action.stop("Failed");
+      if (!flags.json) ux.action.stop("Failed");
       this.error(`key ${flags.key} does not exist on db ${flags.dbName}`);
     }
-    ux.action.stop();
+    if (!flags.json) ux.action.stop();
     this.log(`${value}`);
 
     await db.close();
-    await stopOrbitDB(orbitdb);
+    await stopOrbitDB(orbitdb, !flags.json);
+    return {name: flags.name, value: value};
   }
 }

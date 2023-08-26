@@ -31,14 +31,14 @@ export default class DocStoreCreate extends Command {
 
   public async run(): Promise<{name: string, created: boolean}> {
     const { flags } = await this.parse(DocStoreCreate);
-    const orbitdb = await startOrbitDB(true);
+    const orbitdb = await startOrbitDB(true, !flags.json);
 
     const db = await createDB(orbitdb, flags.name, "docstore", {
       overwrite: flags.force,
       showSpinner: !flags.json
     });
     db.close();
-    await stopOrbitDB(orbitdb);
+    await stopOrbitDB(orbitdb, !flags.json);
     return {"name": flags.name, "created": true};
   }
 }

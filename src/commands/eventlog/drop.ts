@@ -8,6 +8,7 @@ import { openDB } from "../../utils/open-DB";
 import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
 
 export default class EventlogDrop extends Command {
+  public static enableJsonFlag = true
   static description =
     "Delete a eventlog type database locally (This doesn't remove data on other nodes that have the removed database replicated.)";
 
@@ -29,11 +30,14 @@ export default class EventlogDrop extends Command {
       description:
         "confirm drop (without this option you will be asked to confirm)",
     }),
+    json: Flags.boolean({
+      description: "output as JSON",
+    })
   };
 
-  public async run(): Promise<void> {
+  public async run(): Promise<{ name: string; dropped: boolean }> {
     const { flags } = await this.parse(EventlogDrop);
-    const orbitdb = await startOrbitDB(true);
+    const orbitdb = await startOrbitDB(true, !flags.json);
     const name = await resolveDBIdByName(orbitdb, flags.name, "eventlog");
     const DBExists = await doesDBExists(orbitdb, name);
 
@@ -41,7 +45,7 @@ export default class EventlogDrop extends Command {
       this.error(`database '${flags.name}' (or '${name}') does not exist`);
     }
 
-    const db = await openDB(orbitdb, name, "eventlog");
+    const db = await openDB(orbitdb, name, "eventlog", { showSpinner: !flags.json });
 
     if (!flags.yes) {
       const confirm = await ux.prompt(
@@ -49,8 +53,8 @@ export default class EventlogDrop extends Command {
       );
       if (confirm !== "y") {
         this.log('aborting (response was not "y")');
-        await stopOrbitDB(orbitdb);
-        return;
+        await stopOrbitDB(orbitdb, !flags.json);
+        return { "name": flags.name, "dropped": false };
       }
     }
 
@@ -63,11 +67,12 @@ export default class EventlogDrop extends Command {
         ".orbitdb",
     );
 
-    ux.action.start(`dropping database ${name}`);
+    if (!flags.json) ux.action.start(`dropping database ${name}`);
     await db.drop();
     await db.close();
     await rm(dbCachePath, { recursive: true, force: true });
-    ux.action.stop();
-    await stopOrbitDB(orbitdb);
+    if (!flags.json) ux.action.stop();
+    await stopOrbitDB(orbitdb, !flags.json);
+    return { "name": flags.name, "dropped": true };
   }
 }

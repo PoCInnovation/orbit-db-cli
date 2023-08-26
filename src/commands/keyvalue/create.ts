@@ -4,6 +4,7 @@ import { stopOrbitDB } from "../../services/stop-OrbitDB";
 import { createDB } from "../../utils/create-DB";
 
 export default class KeyValueCreate extends Command {
+  public static enableJsonFlag = true
   static description = "Create a KeyValue type database";
 
   static examples = [
@@ -23,16 +24,21 @@ export default class KeyValueCreate extends Command {
       char: "f",
       description: "force overwrite if DB already exists",
     }),
+    json: Flags.boolean({
+      description: "output as JSON",
+    })
   };
 
-  public async run(): Promise<void> {
+  public async run(): Promise<{name: string, created: boolean}> {
     const { flags } = await this.parse(KeyValueCreate);
-    const orbitdb = await startOrbitDB(true);
+    const orbitdb = await startOrbitDB(true, !flags.json);
 
     const db = await createDB(orbitdb, flags.name, "keyvalue", {
       overwrite: flags.force,
+      showSpinner: !flags.json
     });
     db.close();
-    await stopOrbitDB(orbitdb);
+    await stopOrbitDB(orbitdb, !flags.json);
+    return {name: flags.name, created: true};
   }
 }

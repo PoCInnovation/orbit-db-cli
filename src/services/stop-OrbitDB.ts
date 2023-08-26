@@ -1,7 +1,7 @@
 import { ux } from "@oclif/core";
 
 // orbitdb: OrbitDB
-const stopOrbitDB = async (orbitdb: any, showSpinner = true) => {
+const stopOrbitDB = async (orbitdb: any, showSpinner: boolean) => {
   if (showSpinner) ux.action.start("Stopping OrbitDB");
   try {
     await orbitdb._ipfs.stop();

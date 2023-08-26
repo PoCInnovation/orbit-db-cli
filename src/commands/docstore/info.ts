@@ -6,6 +6,7 @@ import { openDB } from "../../utils/open-DB";
 import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
 
 export default class DocStoreInfo extends Command {
+  public static enableJsonFlag = true
   static description = "Show informations about a docstore type database";
 
   static examples: Command.Example[] = [
@@ -19,11 +20,14 @@ export default class DocStoreInfo extends Command {
       description: "name of the database",
       required: true,
     }),
+    json: Flags.boolean({
+      description: "output as JSON",
+    })
   };
 
-  public async run(): Promise<void> {
+  public async run(): Promise<{name: string, type: string, address: string, owner: string; dataFile: string; entries: number; writeAccess: boolean}> {
     const { flags } = await this.parse(DocStoreInfo);
-    const orbitdb = await startOrbitDB(true);
+    const orbitdb = await startOrbitDB(true, !flags.json);
     const dbAdress = await resolveDBIdByName(orbitdb, flags.dbName, "docstore");
     const DBExists = await doesDBExists(orbitdb, dbAdress);
 
@@ -33,17 +37,27 @@ export default class DocStoreInfo extends Command {
       );
     }
 
-    const db = await openDB(orbitdb, dbAdress, "docstore");
+    const db = await openDB(orbitdb, dbAdress, "docstore", { showSpinner: !flags.json });
+    const dbInfo = {
+      name: db.dbname,
+      type: db._type,
+      address: db.address.toString(),
+      owner: db.id,
+      dataFile: `./${db._cache.path}`,
+      entries: db._oplog.length,
+      writeAccess: db.access.write,
+    }
     this.log("--- Database informations ---\n");
-    this.log(`Name: ${db.dbname}`);
-    this.log(`Type: ${db._type}`);
-    this.log(`Adress: ${db.address.toString()}`);
-    this.log(`Owner: ${db.id}`);
-    this.log(`Data file: ./${db._cache.path}`);
-    this.log(`Entries: ${db._oplog.length}`);
-    this.log(`Write-Access: ${db.access.write}`);
+    this.log(`Name: ${dbInfo.name}`);
+    this.log(`Type: ${dbInfo.type}`);
+    this.log(`Adress: ${dbInfo.address}`);
+    this.log(`Owner: ${dbInfo.owner}`);
+    this.log(`Data file: ${dbInfo.dataFile}`);
+    this.log(`Value: ${dbInfo.entries}`);
+    this.log(`Write-Access: ${dbInfo.writeAccess}`);
 
     await db.close();
-    await stopOrbitDB(orbitdb);
+    await stopOrbitDB(orbitdb, !flags.json);
+    return dbInfo
   }
 }

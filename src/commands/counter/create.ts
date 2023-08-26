@@ -24,7 +24,6 @@ export default class CounterCreate extends Command {
       char: "f",
       description: "force overwrite if DB already exists",
     }),
-
     json: Flags.boolean({
       description: "output as JSON",
     }),

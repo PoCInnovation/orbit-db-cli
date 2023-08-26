@@ -7,6 +7,7 @@ import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
 import { saveDB } from "../../utils/save-DB";
 
 export default class DocStoreDel extends Command {
+  public static enableJsonFlag = true
   static description = "Delete a file to a docstore type database";
 
   static examples: Command.Example[] = [
@@ -21,17 +22,20 @@ export default class DocStoreDel extends Command {
       required: true,
     }),
     // flag with a value (-n VALUE, --name=VALUE)
-    keys: Flags.integer({
+    keys: Flags.string({
       char: "k",
       description: "specify the keys of the entries you want to delete",
       required: true,
       multiple: true,
     }),
+    json: Flags.boolean({
+      description: "output as JSON",
+    })
   };
 
-  public async run(): Promise<void> {
+  public async run(): Promise<{name: string, keys: {key: string, deleted: boolean}[]}> {
     const { flags } = await this.parse(DocStoreDel);
-    const orbitdb = await startOrbitDB(true);
+    const orbitdb = await startOrbitDB(true, !flags.json);
     const dbAdress = await resolveDBIdByName(orbitdb, flags.dbName, "docstore");
     const DBExists = await doesDBExists(orbitdb, dbAdress);
 
@@ -41,18 +45,24 @@ export default class DocStoreDel extends Command {
       );
     }
 
-    const db = await openDB(orbitdb, dbAdress, "docstore");
+    const db = await openDB(orbitdb, dbAdress, "docstore", { showSpinner: !flags.json });
+
+    let keysDel: {key: string, deleted: boolean}[] = [];
     for (const key of flags.keys) {
-      ux.action.start(`Deleting entry: ${key} from docstore '${flags.dbName}' database`);
+      if (!flags.json) ux.action.start(`Deleting entry: ${key} from docstore '${flags.dbName}' database`);
       try {
         await db.del(key);
-        ux.action.stop();
+        if (!flags.json) ux.action.stop();
+        keysDel.push({key: key, deleted: true});
       } catch (error) {
-        ux.action.stop(`Error occured while deleting entry: ${error}`);
+        if (!flags.json) ux.action.stop(`Error occured while deleting entry: ${error}`);
+        keysDel.push({key: key, deleted: false});
       }
     }
-    await saveDB(db);
+
+    await saveDB(db, !flags.json);
     await db.close();
-    await stopOrbitDB(orbitdb);
+    await stopOrbitDB(orbitdb, !flags.json);
+    return {name: flags.dbName, keys: keysDel};
   }
 }

@@ -6,6 +6,7 @@ import { openDB } from "../../utils/open-DB";
 import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
 
 export default class DocstoreGet extends Command {
+  public static enableJsonFlag = true
   static description = "Get a value by its key from a docstore type database";
 
   static examples: Command.Example[] = [
@@ -25,11 +26,14 @@ export default class DocstoreGet extends Command {
       description: "key of the entry",
       required: true,
     }),
+    json: Flags.boolean({
+      description: "output as JSON",
+    })
   };
 
-  public async run(): Promise<void> {
+  public async run(): Promise<{name: string, docs: {_id: string, content: string}[]}> {
     const { flags } = await this.parse(DocstoreGet);
-    const orbitdb = await startOrbitDB(true);
+    const orbitdb = await startOrbitDB(true, !flags.json);
     const dbAdress = await resolveDBIdByName(orbitdb, flags.dbName, "docstore");
     const DBExists = await doesDBExists(orbitdb, dbAdress);
 
@@ -38,21 +42,24 @@ export default class DocstoreGet extends Command {
         `database '${flags.dbName}' (or '${dbAdress}') does not exist`,
       );
     }
-    const db = await openDB(orbitdb, dbAdress, "docstore");
+    const db = await openDB(orbitdb, dbAdress, "docstore", { showSpinner: !flags.json });
 
-    ux.action.start(`Getting value: ${flags.key} from docstore '${flags.dbName}' database`);
-    const values = db.get(flags.key);
+    if (!flags.json) ux.action.start(`Getting value: ${flags.key} from docstore '${flags.dbName}' database`);
+    const values: {_id: string, content: string}[] = db.get(flags.key);
     if (values === undefined || values.length === 0) {
-      ux.action.stop("Failed");
+      if (!flags.json) ux.action.stop("Failed");
       this.error(`key ${flags.key} does not exist on db ${flags.dbName}`);
     }
-    ux.action.stop();
+    if (!flags.json) ux.action.stop();
 
-    for (const value of values) {
-      this.log(`${value.content}`);
+    if (!flags.json) {
+      for (const value of values) {
+        this.log(`|--- ${value._id} --|\n${value.content}`);
+      }
     }
 
     await db.close();
-    await stopOrbitDB(orbitdb);
+    await stopOrbitDB(orbitdb, !flags.json);
+    return {name: flags.dbName, docs: values};
   }
 }

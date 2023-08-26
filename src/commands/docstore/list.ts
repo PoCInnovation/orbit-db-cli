@@ -6,6 +6,7 @@ import { openDB } from "../../utils/open-DB";
 import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
 
 export default class DocStoreList extends Command {
+  public static enableJsonFlag = true
   static description = "Get all keys from a docstore type database";
 
   static examples: Command.Example[] = [
@@ -19,11 +20,14 @@ export default class DocStoreList extends Command {
       description: "name of the database",
       required: true,
     }),
+    json: Flags.boolean({
+      description: "output as JSON",
+    })
   };
 
-  public async run(): Promise<void> {
+  public async run(): Promise<{entries: string[]}> {
     const { flags } = await this.parse(DocStoreList);
-    const orbitdb = await startOrbitDB(true);
+    const orbitdb = await startOrbitDB(true, !flags.json);
     const dbAdress = await resolveDBIdByName(orbitdb, flags.dbName, "docstore");
     const DBExists = await doesDBExists(orbitdb, dbAdress);
 
@@ -32,21 +36,25 @@ export default class DocStoreList extends Command {
         `database '${flags.dbName}' (or '${dbAdress}') does not exist`,
       );
     }
-    const db = await openDB(orbitdb, dbAdress, "docstore");
+    const db = await openDB(orbitdb, dbAdress, "docstore", { showSpinner: !flags.json });
 
-    ux.action.start(`Getting all keys from docstore '${flags.dbName}' database`);
-    const values = db.get("");
+    if (!flags.json) ux.action.start(`Getting all keys from docstore '${flags.dbName}' database`);
+    const values: {_id: string, content: string}[] = db.get("");
     if (values === undefined || values.length === 0) {
-      ux.action.stop("No keys found");
-      return;
+      if (!flags.json) ux.action.stop("No keys found");
+      return {entries: []};
     }
-    ux.action.stop();
+    if (!flags.json) ux.action.stop();
 
-    for (const value of values) {
-      this.log(`${value._id}`);
+    const entries = values.map((value) => value._id);
+    if (!flags.json) {
+      entries.forEach((key) => {
+        this.log(`${key}`);
+      })
     }
 
     await db.close();
-    await stopOrbitDB(orbitdb);
+    await stopOrbitDB(orbitdb, !flags.json);
+    return {entries: entries};
   }
 }

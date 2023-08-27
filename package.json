@@ -56,7 +56,7 @@
       "@oclif/plugin-autocomplete",
       "@oclif/plugin-not-found"
     ],
-    "topicSeparator": ":",
+    "topicSeparator": " ",
     "topics": {
       "feed": { "description": "Feed related commands" },
       "keyvalue": { "description": "Key value related commands" },

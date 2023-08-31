@@ -1,21 +1,23 @@
 import { ux } from "@oclif/core";
-import { defaultDatabaseDir } from "../services/config";
 
-type DBType = "feed" | "counter" | "eventlog" | "docstore" | "keyvalue";
+type DBType = "feed" | "counter" | "eventlog" | "docstore" | "keyvalue" // OLD;
+              | "events" | "documents" | "keyvalue"
 
 export { DBType };
 export { createDB, CreateDBOptions };
 
+import { dropDB } from './drop-DB';
+
 type CreateDBOptions = {
   overwrite?: boolean;
-  directory?: string;
   showSpinner: boolean;
+  sync?: boolean;
 };
 
 const defaultCreateDBOptions = {
   overwrite: false,
-  directory: defaultDatabaseDir,
   showSpinner: true,
+  sync: false,
 };
 
 // orbitdb: OrbitDB
@@ -35,27 +37,40 @@ const createDB = async (
   type: DBType,
   options: CreateDBOptions,
 ) => {
+  // @ts-ignore
+  const { IPFSBlockStorage, LevelStorage, ComposedStorage } = await import("@orbitdb/core");
+  const entryStorage = await ComposedStorage(await IPFSBlockStorage({ipfs: orbitdb.ipfs}), await LevelStorage());
+
   if (options.overwrite === undefined || options.overwrite === null) {
     options.overwrite = defaultCreateDBOptions.overwrite;
   }
 
-  if (options.directory === undefined || options.directory === null) {
-    options.directory = defaultCreateDBOptions.directory;
-  }
   if (options.showSpinner === undefined || options.showSpinner === null) {
     options.showSpinner = defaultCreateDBOptions.showSpinner;
   }
 
+  if (options.sync === undefined || options.sync === null) {
+    options.sync = defaultCreateDBOptions.sync;
+  }
+
+  if (options.overwrite) {
+    if (options.showSpinner) ux.action.start("Droping DB if exists");
+    try {
+      await dropDB(orbitdb, name, type, { showSpinner: options.showSpinner, entryStorage: entryStorage });
+      if (options.showSpinner) ux.action.stop();
+    } catch (error) {
+      if (options.showSpinner) ux.action.stop("Failed");
+      throw new Error(`An error occured while dropping DB: ${error}`);
+    }
+  }
+
   if (options.showSpinner) ux.action.start(`Creating ${type} DB ${name}`);
   try {
-    const db = await orbitdb.create(name, type, {
-      overwrite: options.overwrite,
-      directory: options.directory,
-    });
+    const db = await orbitdb.open(name, { type, sync: options.sync, entryStorage: entryStorage });
     if (options.showSpinner) ux.action.stop();
     return db;
   } catch (error) {
     if (options.showSpinner) ux.action.stop("Failed");
-    throw new Error("An error occured while creating DB");
+    throw new Error(`An error occured while creating DB: ${error}`);
   }
 };

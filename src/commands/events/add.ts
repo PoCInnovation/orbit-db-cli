@@ -6,12 +6,12 @@ import { openDB } from "../../utils/open-DB";
 import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
 import { saveDB } from "../../utils/save-DB";
 
-export default class EventlogAdd extends Command {
+export default class EventsAdd extends Command {
   public static enableJsonFlag = true
-  static description = "Add a data to an eventlog type database";
+  static description = "Add a data to an events type database";
 
   static examples: Command.Example[] = [
-    "<%= config.bin %> <%= command.id %> --name=myEventlogDbName --data=lol",
+    "<%= config.bin %> <%= command.id %> --name=myEventsDbName --data=lol",
   ];
 
   static flags = {
@@ -23,7 +23,7 @@ export default class EventlogAdd extends Command {
     // flag with a value (-d VALUE, --data=VALUE)
     data: Flags.string({
       char: "d",
-      description: "data to add to the eventlog",
+      description: "data to add to the events",
       required: true,
       multiple: true,
     }),
@@ -44,18 +44,10 @@ export default class EventlogAdd extends Command {
   };
 
   public async run(): Promise<{name: string, added: {value: string, added: boolean}[]}> {
-    const { flags } = await this.parse(EventlogAdd);
+    const { flags } = await this.parse(EventsAdd);
     const orbitdb = await startOrbitDB(true, !flags.json);
-    const dbAdress = await resolveDBIdByName(orbitdb, flags.dbName, "eventlog");
-    const DBExists = await doesDBExists(orbitdb, dbAdress);
 
-    if (!DBExists) {
-      this.error(
-        `database '${flags.dbName}' (or '${dbAdress}') does not exist`,
-      );
-    }
-
-    const db = await openDB(orbitdb, dbAdress, "eventlog", { showSpinner: !flags.json });
+    const db = await openDB(orbitdb, flags.dbName, "events", { showSpinner: !flags.json });
 
     let isError = false;
     let added: {value: string, added: boolean}[] = [];
@@ -63,7 +55,7 @@ export default class EventlogAdd extends Command {
       if (isError === true && flags.failfast === true) {
         break;
       }
-      if (!flags.json) ux.action.start(`Adding data: ${data} to eventlog '${flags.dbName}' database`);
+      if (!flags.json) ux.action.start(`Adding data: ${data} to events '${flags.dbName}' database`);
       try {
         const hash = await db.add(data);
         if (!flags.json) ux.action.stop(`hash: ${hash}`);
@@ -74,9 +66,9 @@ export default class EventlogAdd extends Command {
         added.push({value: data, added: false});
       }
     }
-    if (isError === false || flags.saveonerror === true) {
-      await saveDB(db, !flags.json);
-    }
+    // if (isError === false || flags.saveonerror === true) {
+    //   await saveDB(db, !flags.json);
+    // }
     await db.close();
     await stopOrbitDB(orbitdb, !flags.json);
     return {name: flags.dbName, added};

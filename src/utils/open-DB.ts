@@ -57,12 +57,16 @@ const openDB = async (
 
   if (options.showSpinner) ux.action.start(`Opening ${type} DB ${name}`);
   try {
+    // @ts-ignore
+    const { IPFSBlockStorage, LevelStorage, ComposedStorage } = await import("@orbitdb/core");
+    const entryStorage = await ComposedStorage(await IPFSBlockStorage({ipfs: orbitdb.ipfs}), await LevelStorage());
     const db = await orbitdb.open(name, {
       type,
       replicate: options.replicate,
       create: options.create,
       localOnly: options.localOnly,
       sync: options.sync,
+      entryStorage: entryStorage,
     });
     if (options.showSpinner) ux.action.stop();
     if (options.showSpinner) ux.action.start('Loading last snapshot');
@@ -73,6 +77,6 @@ const openDB = async (
     return db;
   } catch (error) {
     if (options.showSpinner) ux.action.stop("Failed");
-    throw new Error("An error occured while opening DB");
+    throw new Error(`An error occured while opening DB ${error}`);
   }
 };

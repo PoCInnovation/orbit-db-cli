@@ -8,15 +8,10 @@ const startOrbitDB = async (offline: boolean, showSpinner: boolean): Promise<any
   try {
     const ipfs = await startIpfs(!offline);
     // @ts-ignore
-    const peerId = await ipfs.id();
     const directory: string = defaultDatabaseDir;
     // @ts-ignore
-    const { default: OrbitDB } = await import("orbit-db");
-    const orbitdb = OrbitDB.createInstance(ipfs, {
-      offline,
-      directory,
-      id: peerId,
-    });
+    const { createOrbitDB } = await import("@orbitdb/core");
+    const orbitdb = createOrbitDB({ ipfs, directory })
     if (showSpinner) ux.action.stop();
     return orbitdb;
   } catch (error) {

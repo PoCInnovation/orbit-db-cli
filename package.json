@@ -24,12 +24,12 @@
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-not-found": "^2.3.36",
     "@oclif/plugin-plugins": "^2.4.7",
+    "@orbitdb/core": "^0.30.2-53e8b35.0",
     "blockstore-datastore-adapter": "^5.0.0",
     "datastore-level": "^10.1.1",
     "ipfs-core": "^0.18.0",
     "ipfs-repo": "^17.0.0",
     "multiformats": "^12.0.1",
-    "orbit-db": "^0.29.0",
     "prom-client": "^14.2.0"
   },
   "devDependencies": {
@@ -58,11 +58,21 @@
     ],
     "topicSeparator": " ",
     "topics": {
-      "feed": { "description": "Feed related commands" },
-      "keyvalue": { "description": "Key value related commands" },
-      "eventlog": { "description": "Event log related commands" },
-      "counter": { "description": "Counter related commands" },
-      "docstore": { "description": "Document store related commands" }
+      "feed": {
+        "description": "Feed related commands"
+      },
+      "keyvalue": {
+        "description": "Key value related commands"
+      },
+      "eventlog": {
+        "description": "Event log related commands"
+      },
+      "counter": {
+        "description": "Counter related commands"
+      },
+      "docstore": {
+        "description": "Document store related commands"
+      }
     }
   },
   "scripts": {

@@ -4,12 +4,12 @@ import { ux } from "@oclif/core";
 const stopOrbitDB = async (orbitdb: any, showSpinner: boolean) => {
   if (showSpinner) ux.action.start("Stopping OrbitDB");
   try {
-    await orbitdb._ipfs.stop();
+    await orbitdb.ipfs.stop();
     await orbitdb.stop();
     if (showSpinner) ux.action.stop();
   } catch (error) {
     if (showSpinner) ux.action.stop("Failed");
-    throw new Error("An error occured while closing OrbitDB");
+    throw new Error(`An error occured while closing OrbitDB ${error}`);
   }
 };
 

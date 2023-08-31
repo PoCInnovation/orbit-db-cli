@@ -35,20 +35,11 @@ export default class EventlogList extends Command {
   public async run(): Promise<{name: string, entries: string[]}> {
     const { flags } = await this.parse(EventlogList);
     const orbitdb = await startOrbitDB(true, !flags.json);
-    const dbAdress = await resolveDBIdByName(orbitdb, flags.dbName, "eventlog");
-    const DBExists = await doesDBExists(orbitdb, dbAdress);
 
-    if (!DBExists) {
-      this.error(
-        `database '${flags.dbName}' (or '${dbAdress}') does not exist`,
-      );
-    }
-
-    const db = await openDB(orbitdb, dbAdress, "eventlog", { showSpinner: !flags.json });
+    const db = await openDB(orbitdb, flags.dbName, "events", { showSpinner: !flags.json });
     if (!flags.json) ux.action.start(`Listing entries from eventlog '${flags.dbName}' database`);
     const entries: { payload: { value: string } }[] = db
       .iterator({ limit: flags.limit, reverse: true })
-      .collect();
     let listValue: string[] = []
     if (entries.length > 0) {
       if (!flags.json) ux.action.stop()

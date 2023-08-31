@@ -3,13 +3,13 @@ import { startOrbitDB } from "../../services/start-OrbitDB";
 import { stopOrbitDB } from "../../services/stop-OrbitDB";
 import { createDB } from "../../utils/create-DB";
 
-export default class EventlogCreate extends Command {
+export default class EventsCreate extends Command {
   public static enableJsonFlag = true
-  static description = "Create an eventlog type database";
+  static description = "Create an events type database";
 
   static examples = [
-    "<%= config.bin %> <%= command.id %> --name=myEventlogDbLOL",
-    "<%= config.bin %> <%= command.id %> --name=myEventlogDbLOL --force",
+    "<%= config.bin %> <%= command.id %> --name=myEventsDbLOL",
+    "<%= config.bin %> <%= command.id %> --name=myEventsDbLOL --force",
   ];
 
   static flags = {
@@ -30,10 +30,10 @@ export default class EventlogCreate extends Command {
   };
 
   public async run(): Promise<{name: string, created: boolean}> {
-    const { flags } = await this.parse(EventlogCreate);
+    const { flags } = await this.parse(EventsCreate);
     const orbitdb = await startOrbitDB(true, !flags.json);
 
-    const db = await createDB(orbitdb, flags.name, "eventlog", {
+    const db = await createDB(orbitdb, flags.name, "events", {
       overwrite: flags.force,
       showSpinner: !flags.json
     });

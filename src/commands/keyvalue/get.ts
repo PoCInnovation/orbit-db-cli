@@ -1,9 +1,7 @@
 import { Command, Flags, ux } from "@oclif/core";
 import { startOrbitDB } from "../../services/start-OrbitDB";
 import { stopOrbitDB } from "../../services/stop-OrbitDB";
-import { doesDBExists } from "../../utils/does-DBExists";
 import { openDB } from "../../utils/open-DB";
-import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
 
 export default class KeyValueGet extends Command {
   public static enableJsonFlag = true
@@ -34,15 +32,8 @@ export default class KeyValueGet extends Command {
   public async run(): Promise<{name: string, value: string}> {
     const { flags } = await this.parse(KeyValueGet);
     const orbitdb = await startOrbitDB(true, !flags.json);
-    const dbAdress = await resolveDBIdByName(orbitdb, flags.dbName, "keyvalue");
-    const DBExists = await doesDBExists(orbitdb, dbAdress);
 
-    if (!DBExists) {
-      this.error(
-        `database '${flags.dbName}' (or '${dbAdress}') does not exist`,
-      );
-    }
-    const db = await openDB(orbitdb, dbAdress, "keyvalue", { showSpinner: !flags.json });
+    const db = await openDB(orbitdb, flags.dbName, "keyvalue", { showSpinner: !flags.json });
 
     if (!flags.json) ux.action.start(`Getting value: ${flags.key} from keyvalue '${flags.dbName}' database`);
     const value = db.get(flags.key);

@@ -1,16 +1,14 @@
 import { Command, Flags } from "@oclif/core";
 import { startOrbitDB } from "../../services/start-OrbitDB";
 import { stopOrbitDB } from "../../services/stop-OrbitDB";
-import { doesDBExists } from "../../utils/does-DBExists";
 import { openDB } from "../../utils/open-DB";
-import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
 
-export default class FeedInfo extends Command {
+export default class DocStoreInfo extends Command {
   public static enableJsonFlag = true
-  static description = "Show informations about a feed type database";
+  static description = "Show informations about a docstore type database";
 
   static examples: Command.Example[] = [
-    "<%= config.bin %> <%= command.id %> --name=myFeedDbName",
+    "<%= config.bin %> <%= command.id %> --name=myDocstoreDbName",
   ];
 
   static flags = {
@@ -20,21 +18,16 @@ export default class FeedInfo extends Command {
       description: "name of the database",
       required: true,
     }),
+    json: Flags.boolean({
+      description: "output as JSON",
+    })
   };
 
   public async run(): Promise<{name: string, type: string, address: string, owner: string; dataFile: string; entries: number; writeAccess: boolean}> {
-    const { flags } = await this.parse(FeedInfo);
+    const { flags } = await this.parse(DocStoreInfo);
     const orbitdb = await startOrbitDB(true, !flags.json);
-    const dbAdress = await resolveDBIdByName(orbitdb, flags.dbName, "feed");
-    const DBExists = await doesDBExists(orbitdb, dbAdress);
 
-    if (!DBExists) {
-      this.error(
-        `database '${flags.dbName}' (or '${dbAdress}') does not exist`,
-      );
-    }
-
-    const db = await openDB(orbitdb, dbAdress, "feed", { showSpinner: !flags.json });
+    const db = await openDB(orbitdb, flags.dbName, "documents", { showSpinner: !flags.json });
     const dbInfo = {
       name: db.dbname,
       type: db._type,

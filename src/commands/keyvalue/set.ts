@@ -1,9 +1,7 @@
 import { Command, Flags, ux } from "@oclif/core";
 import { startOrbitDB } from "../../services/start-OrbitDB";
 import { stopOrbitDB } from "../../services/stop-OrbitDB";
-import { doesDBExists } from "../../utils/does-DBExists";
 import { openDB } from "../../utils/open-DB";
-import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
 import { saveDB } from "../../utils/save-DB";
 
 export default class KeyValueSet extends Command {
@@ -40,15 +38,8 @@ export default class KeyValueSet extends Command {
   public async run(): Promise<{name: string, set: boolean}> {
     const { flags } = await this.parse(KeyValueSet);
     const orbitdb = await startOrbitDB(true, !flags.json);
-    const dbAdress = await resolveDBIdByName(orbitdb, flags.dbName, "keyvalue");
-    const DBExists = await doesDBExists(orbitdb, dbAdress);
 
-    if (!DBExists) {
-      this.error(
-        `database '${flags.dbName}' (or '${dbAdress}') does not exist`,
-      );
-    }
-    const db = await openDB(orbitdb, dbAdress, "keyvalue", { showSpinner: !flags.json });
+    const db = await openDB(orbitdb, flags.dbName, "keyvalue", { showSpinner: !flags.json });
 
     if (flags.value !== undefined) {
       if (!flags.json) ux.action.start(`Setting value: '${flags.value}' to key '${flags.key}' of ${flags.dbName} database`);

@@ -1,9 +1,6 @@
 import { ux } from "@oclif/core";
+import { DBType } from './db-types';
 
-type DBType = "feed" | "counter" | "eventlog" | "docstore" | "keyvalue" // OLD;
-              | "events" | "documents" | "keyvalue"
-
-export { DBType };
 export { createDB, CreateDBOptions };
 
 import { dropDB } from './drop-DB';

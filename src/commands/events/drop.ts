@@ -3,9 +3,7 @@ import { rm } from "node:fs/promises";
 import * as path from "node:path";
 import { startOrbitDB } from "../..//services/start-OrbitDB";
 import { stopOrbitDB } from "../../services/stop-OrbitDB";
-import { doesDBExists } from "../../utils/does-DBExists";
 import { openDB } from "../../utils/open-DB";
-import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
 
 export default class EventlogDrop extends Command {
   public static enableJsonFlag = true
@@ -38,18 +36,12 @@ export default class EventlogDrop extends Command {
   public async run(): Promise<{ name: string; dropped: boolean }> {
     const { flags } = await this.parse(EventlogDrop);
     const orbitdb = await startOrbitDB(true, !flags.json);
-    const name = await resolveDBIdByName(orbitdb, flags.name, "eventlog");
-    const DBExists = await doesDBExists(orbitdb, name);
 
-    if (!DBExists) {
-      this.error(`database '${flags.name}' (or '${name}') does not exist`);
-    }
-
-    const db = await openDB(orbitdb, name, "eventlog", { showSpinner: !flags.json });
+    const db = await openDB(orbitdb, flags.name, "events", { showSpinner: !flags.json });
 
     if (!flags.yes) {
       const confirm = await ux.prompt(
-        `Are you sure you want to drop the database '${name}' (y/n)?`,
+        `Are you sure you want to drop the database '${flags.name}' (y/n)?`,
       );
       if (confirm !== "y") {
         this.log('aborting (response was not "y")');
@@ -67,7 +59,7 @@ export default class EventlogDrop extends Command {
         ".orbitdb",
     );
 
-    if (!flags.json) ux.action.start(`dropping database ${name}`);
+    if (!flags.json) ux.action.start(`dropping database ${flags.name}`);
     await db.drop();
     await db.close();
     await rm(dbCachePath, { recursive: true, force: true });

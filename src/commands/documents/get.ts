@@ -1,9 +1,7 @@
 import { Command, Flags, ux } from "@oclif/core";
 import { startOrbitDB } from "../../services/start-OrbitDB";
 import { stopOrbitDB } from "../../services/stop-OrbitDB";
-import { doesDBExists } from "../../utils/does-DBExists";
 import { openDB } from "../../utils/open-DB";
-import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
 
 export default class DocstoreGet extends Command {
   public static enableJsonFlag = true
@@ -34,15 +32,8 @@ export default class DocstoreGet extends Command {
   public async run(): Promise<{name: string, docs: {_id: string, content: string}[]}> {
     const { flags } = await this.parse(DocstoreGet);
     const orbitdb = await startOrbitDB(true, !flags.json);
-    const dbAdress = await resolveDBIdByName(orbitdb, flags.dbName, "docstore");
-    const DBExists = await doesDBExists(orbitdb, dbAdress);
 
-    if (!DBExists) {
-      this.error(
-        `database '${flags.dbName}' (or '${dbAdress}') does not exist`,
-      );
-    }
-    const db = await openDB(orbitdb, dbAdress, "docstore", { showSpinner: !flags.json });
+    const db = await openDB(orbitdb, flags.dbName, "documents", { showSpinner: !flags.json });
 
     if (!flags.json) ux.action.start(`Getting value: ${flags.key} from docstore '${flags.dbName}' database`);
     const values: {_id: string, content: string}[] = db.get(flags.key);

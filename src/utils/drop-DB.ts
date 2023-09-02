@@ -1,6 +1,6 @@
 import { ux } from "@oclif/core";
 
-import { DBType } from "./create-DB";
+import { DBType } from "./db-types";
 
 export { dropDB }
 

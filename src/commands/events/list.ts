@@ -1,9 +1,7 @@
 import { Command, Flags, ux } from "@oclif/core";
 import { startOrbitDB } from "../../services/start-OrbitDB";
 import { stopOrbitDB } from "../../services/stop-OrbitDB";
-import { doesDBExists } from "../../utils/does-DBExists";
 import { openDB } from "../../utils/open-DB";
-import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
 
 export default class EventlogList extends Command {
   public static enableJsonFlag = true
@@ -32,26 +30,18 @@ export default class EventlogList extends Command {
     })
   };
 
-  public async run(): Promise<{name: string, entries: string[]}> {
+  public async run(): Promise<{name: string, entries: {hash: string, value: string}[]}> {
     const { flags } = await this.parse(EventlogList);
     const orbitdb = await startOrbitDB(true, !flags.json);
 
     const db = await openDB(orbitdb, flags.dbName, "events", { showSpinner: !flags.json });
     if (!flags.json) ux.action.start(`Listing entries from eventlog '${flags.dbName}' database`);
-    const entries: { payload: { value: string } }[] = db
-      .iterator({ limit: flags.limit, reverse: true })
-    let listValue: string[] = []
-    if (entries.length > 0) {
-      if (!flags.json) ux.action.stop()
-      this.log(`--- Database last ${entries.length} entries ---`);
-      listValue = entries.map((entry) => entry.payload.value)
+    let listValue: {hash: string, value: string}[] = []
+    for await (const entry of db.iterator({ limit: flags.limit, reverse: true })) {
+      listValue.push(entry)
       if (!flags.json) {
-        listValue.forEach((value) => {
-          this.log(` --->\n${value}`);
-        })
+        this.log(` --->\n${entry.hash}: ${entry.value}`);
       }
-    } else {
-      if (!flags.json) ux.action.stop(`No entries found`);
     }
 
     await db.close();

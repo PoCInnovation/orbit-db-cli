@@ -37,3 +37,11 @@ const conf = {
 
 export const defaultDatabaseDir = defaultOrbitDbDir;
 export const ipfsConfig = conf;
+
+const entryStorageLevelDir = path.join(defaultOrbitDbDir, "/storage", "/level");
+
+export const getEntryStorage = async (ipfs, pin) => {
+  const { IPFSBlockStorage, LevelStorage, ComposedStorage } = await import("@orbitdb/core");
+  const storage = await ComposedStorage(await IPFSBlockStorage({ ipfs, pin }), await LevelStorage({ path: entryStorageLevelDir }));
+  return storage
+}

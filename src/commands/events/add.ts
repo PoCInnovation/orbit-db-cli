@@ -1,10 +1,7 @@
 import { Command, Flags, ux } from "@oclif/core";
 import { startOrbitDB } from "../../services/start-OrbitDB";
 import { stopOrbitDB } from "../../services/stop-OrbitDB";
-import { doesDBExists } from "../../utils/does-DBExists";
 import { openDB } from "../../utils/open-DB";
-import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
-import { saveDB } from "../../utils/save-DB";
 
 export default class EventsAdd extends Command {
   public static enableJsonFlag = true
@@ -47,7 +44,7 @@ export default class EventsAdd extends Command {
     const { flags } = await this.parse(EventsAdd);
     const orbitdb = await startOrbitDB(true, !flags.json);
 
-    const db = await openDB(orbitdb, flags.dbName, "events", { showSpinner: !flags.json });
+    const db = await openDB(orbitdb, flags.dbName, "events", { showSpinner: !flags.json, pinIpfsBlocks: true });
 
     let isError = false;
     let added: {value: string, added: boolean}[] = [];

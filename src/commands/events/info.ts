@@ -1,9 +1,7 @@
 import { Command, Flags } from "@oclif/core";
 import { startOrbitDB } from "../../services/start-OrbitDB";
 import { stopOrbitDB } from "../../services/stop-OrbitDB";
-import { doesDBExists } from "../../utils/does-DBExists";
 import { openDB } from "../../utils/open-DB";
-import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
 
 export default class EventlogInfo extends Command {
   public static enableJsonFlag = true
@@ -25,36 +23,32 @@ export default class EventlogInfo extends Command {
     })
   };
 
-  public async run(): Promise<{name: string, type: string, address: string, owner: string; dataFile: string; entries: number; writeAccess: boolean}> {
+  public async run(): Promise<{name: string, type: string, address: string, peers: Set<string>; entries: number; writeAccess: boolean}> {
     const { flags } = await this.parse(EventlogInfo);
     const orbitdb = await startOrbitDB(true, !flags.json);
-    const dbAdress = await resolveDBIdByName(orbitdb, flags.dbName, "eventlog");
-    const DBExists = await doesDBExists(orbitdb, dbAdress);
 
-    if (!DBExists) {
-      this.error(
-        `database '${flags.dbName}' (or '${dbAdress}') does not exist`,
-      );
-    }
-
-    const db = await openDB(orbitdb, dbAdress, "eventlog", { showSpinner: !flags.json });
+    const db = await openDB(orbitdb, flags.dbName, "events", { showSpinner: !flags.json });
+    let peersString = ''
+    db.sync.peers.forEach((peer: string) => {
+      peersString += ', ' + peer
+    })
+    peersString = peersString.substring(2)
     const dbInfo = {
-      name: db.dbname,
+      name: db.name,
       type: db._type,
       address: db.address.toString(),
-      owner: db.id,
-      dataFile: `./${db._cache.path}`,
-      entries: db._oplog.length,
+      peers: db.sync.peers,
+      entries: (await db.log.values()).length,
       writeAccess: db.access.write,
     }
-    this.log("--- Database informations ---\n");
+    this.log("\n--- Database informations ---");
     this.log(`Name: ${dbInfo.name}`);
-    this.log(`Type: ${dbInfo.type}`);
+    this.log(`Type: events`);
     this.log(`Adress: ${dbInfo.address}`);
-    this.log(`Owner: ${dbInfo.owner}`);
-    this.log(`Data file: ${dbInfo.dataFile}`);
-    this.log(`Value: ${dbInfo.entries}`);
+    this.log(`Peers: ${peersString}`);
+    this.log(`Number of items: ${dbInfo.entries}`);
     this.log(`Write-Access: ${dbInfo.writeAccess}`);
+    this.log("--- End ---\n");
 
     await db.close();
     await stopOrbitDB(orbitdb, !flags.json);

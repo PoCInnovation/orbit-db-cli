@@ -1,9 +1,7 @@
 import { Command, Flags, ux } from "@oclif/core";
 import { startOrbitDB } from "../../services/start-OrbitDB";
 import { stopOrbitDB } from "../../services/stop-OrbitDB";
-import { doesDBExists } from "../../utils/does-DBExists";
 import { openDB } from "../../utils/open-DB";
-import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
 import { saveDB } from "../../utils/save-DB";
 
 export default class DocStoreDel extends Command {
@@ -36,16 +34,8 @@ export default class DocStoreDel extends Command {
   public async run(): Promise<{name: string, keys: {key: string, deleted: boolean}[]}> {
     const { flags } = await this.parse(DocStoreDel);
     const orbitdb = await startOrbitDB(true, !flags.json);
-    const dbAdress = await resolveDBIdByName(orbitdb, flags.dbName, "docstore");
-    const DBExists = await doesDBExists(orbitdb, dbAdress);
 
-    if (!DBExists) {
-      this.error(
-        `database '${flags.dbName}' (or '${dbAdress}') does not exist`,
-      );
-    }
-
-    const db = await openDB(orbitdb, dbAdress, "docstore", { showSpinner: !flags.json });
+    const db = await openDB(orbitdb, flags.dbName, "documents", { showSpinner: !flags.json });
 
     let keysDel: {key: string, deleted: boolean}[] = [];
     for (const key of flags.keys) {

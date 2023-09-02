@@ -1,5 +1,6 @@
 import { ux } from "@oclif/core";
-import { DBType } from "./create-DB";
+import { DBType } from "./db-types";
+import { getEntryStorage } from "../services/config";
 
 export { openDB, OpenDBOptions };
 
@@ -9,6 +10,7 @@ type OpenDBOptions = {
   localOnly?: boolean;
   sync?: boolean;
   showSpinner: boolean;
+  pinIpfsBlocks?: boolean;
 };
 
 const defaultOpenDBOptions = {
@@ -17,6 +19,7 @@ const defaultOpenDBOptions = {
   localOnly: false,
   sync: false,
   showSpinner: true,
+  pinIpfsBlocks: false,
 };
 
 /**
@@ -55,11 +58,14 @@ const openDB = async (
     options.showSpinner = defaultOpenDBOptions.showSpinner;
   }
 
+  if (options.pinIpfsBlocks === undefined || options.pinIpfsBlocks === null) {
+    options.pinIpfsBlocks = defaultOpenDBOptions.pinIpfsBlocks;
+  }
+
   if (options.showSpinner) ux.action.start(`Opening ${type} DB ${name}`);
   try {
     // @ts-ignore
-    const { IPFSBlockStorage, LevelStorage, ComposedStorage } = await import("@orbitdb/core");
-    const entryStorage = await ComposedStorage(await IPFSBlockStorage({ipfs: orbitdb.ipfs}), await LevelStorage());
+    const entryStorage = await getEntryStorage(orbitdb.ipfs, options.pinIpfsBlocks);
     const db = await orbitdb.open(name, {
       type,
       replicate: options.replicate,

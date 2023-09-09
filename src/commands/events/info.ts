@@ -20,6 +20,11 @@ export default class EventlogInfo extends Command {
     }),
     json: Flags.boolean({
       description: "output as JSON",
+    }),
+    ipfs: Flags.string({
+      char: "i",
+      description: "ipfs address of the peer",
+      required: true
     })
   };
 

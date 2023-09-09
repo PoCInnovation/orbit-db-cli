@@ -30,11 +30,13 @@ const getLoadCodec = async () => {
 };
 
 // return: Promise<IPFS>
-const startIpfs = async (start: boolean): Promise<any> => {
+const startIpfs = async (start: boolean, ipfsAddress: string | undefined = undefined): Promise<any> => {
   try {
     const { BlockstoreDatastoreAdapter } = await import(
       "blockstore-datastore-adapter"
     );
+    // @ts-ignore
+    const { Multiaddr } = await import('@multiformats/multiaddr');
     const { createRepo } = await import("ipfs-repo");
     const { LevelDatastore } = await import("datastore-level");
     const loadCodec = await getLoadCodec();
@@ -49,7 +51,7 @@ const startIpfs = async (start: boolean): Promise<any> => {
     });
 
     const ipfsConf = ipfsConfig;
-    if (start) {
+    if (start || ipfsAddress !== undefined) {
       ipfsConf.start = true;
     }
 
@@ -58,6 +60,11 @@ const startIpfs = async (start: boolean): Promise<any> => {
       repo,
       ...ipfsConf,
     });
+
+    if (ipfsAddress !== undefined) {
+      await ipfs.swarm.connect(Multiaddr(ipfsAddress));
+    }
+
     return ipfs;
   } catch (error) {
     console.error("Error initializing IPFS node:", error);

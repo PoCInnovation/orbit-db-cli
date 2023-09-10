@@ -37,12 +37,17 @@ export default class EventsAdd extends Command {
     }),
     json: Flags.boolean({
       description: "output as JSON",
+    }),
+    ipfs: Flags.string({
+      char: "i",
+      description: "ipfs address of the peer",
+      required: false
     })
   };
 
   public async run(): Promise<{name: string, added: {value: string, added: boolean}[]}> {
     const { flags } = await this.parse(EventsAdd);
-    const orbitdb = await startOrbitDB(true, !flags.json);
+    const orbitdb = await startOrbitDB(true, !flags.json, flags.ipfs);
 
     const db = await openDB(orbitdb, flags.dbName, "events", { showSpinner: !flags.json, pinIpfsBlocks: true });
 

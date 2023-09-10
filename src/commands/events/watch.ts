@@ -7,7 +7,7 @@ export default class EventsWatch extends Command {
   static description = "open database of type events and watch it";
 
   static examples: Command.Example[] = [
-    "<%= config.bin %> <%= command.id %> --name=myEventsDbName --data=lol",
+    "<%= config.bin %> <%= command.id %> --name=myEventsDbName",
   ];
 
   static flags = {
@@ -16,11 +16,16 @@ export default class EventsWatch extends Command {
       description: "name of the database",
       required: true,
     }),
+    ipfs: Flags.string({
+      char: "i",
+      description: "ipfs address of the peer",
+      required: false
+    })
   };
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(EventsWatch);
-    const orbitdb = await startOrbitDB(false, true);
+    const orbitdb = await startOrbitDB(false, true, flags.ipfs);
 
     const db = await openDB(orbitdb, flags.dbName, "events", { showSpinner: true, pinIpfsBlocks: true });
 
@@ -40,13 +45,40 @@ export default class EventsWatch extends Command {
       this.log(`entry updated: ${JSON.stringify(entry)}`);
     })
 
-    console.log(`=> IPFS ID :: ${(await orbitdb.ipfs.id()).id}`);
+    this.log(`=> IPFS ID :: ${(await orbitdb.ipfs.id()).id}`);
     for (const index in (await orbitdb.ipfs.id()).addresses) {
-      console.log(`=> IPFS Address :: ${(await orbitdb.ipfs.id()).addresses[index]}`);
+      this.log(`=> IPFS Address :: ${(await orbitdb.ipfs.id()).addresses[index]}`);
     }
-    console.log(`=> DB Address :: ${db.address}`);
+    this.log(`=> DB Address :: ${db.address}`);
 
-    await ux.prompt("Press enter to exit", {required: false});
+    this.log("Enter 'exit' to quit this program; 'help' for more info");
+    while (true) {
+      const res = await ux.prompt(">> ", {required: false});
+      if (res === "exit") {
+        break;
+      }
+      switch (res) {
+        case "name":
+          this.log(`${db.name}`)
+        case "type":
+          this.log(`events`)
+        case "address":
+          this.log(`${db.address.toString()}`)
+        case "peers":
+          let peersString = ''
+          db.sync.peers.forEach((peer: string) => {
+            peersString += ', ' + peer
+          })
+          peersString = peersString.substring(2)
+          this.log(`${peersString}`)
+        case "entries":
+          this.log(`${(await db.log.values()).length}`)
+        case "write-access":
+          this.log(`${db.access.write}`)
+        case "help":
+          this.log('commands: help, name, type, address, peers, entries, quit')
+      }
+    }
 
     await db.close();
     await stopOrbitDB(orbitdb, true);

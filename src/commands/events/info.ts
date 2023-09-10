@@ -24,13 +24,13 @@ export default class EventlogInfo extends Command {
     ipfs: Flags.string({
       char: "i",
       description: "ipfs address of the peer",
-      required: true
+      required: false
     })
   };
 
   public async run(): Promise<{name: string, type: string, address: string, peers: Set<string>; entries: number; writeAccess: boolean}> {
     const { flags } = await this.parse(EventlogInfo);
-    const orbitdb = await startOrbitDB(true, !flags.json);
+    const orbitdb = await startOrbitDB(true, !flags.json, flags.ipfs);
 
     const db = await openDB(orbitdb, flags.dbName, "events", { showSpinner: !flags.json });
     let peersString = ''
@@ -40,7 +40,7 @@ export default class EventlogInfo extends Command {
     peersString = peersString.substring(2)
     const dbInfo = {
       name: db.name,
-      type: db._type,
+      type: 'events',
       address: db.address.toString(),
       peers: db.sync.peers,
       entries: (await db.log.values()).length,
@@ -48,7 +48,7 @@ export default class EventlogInfo extends Command {
     }
     this.log("\n--- Database informations ---");
     this.log(`Name: ${dbInfo.name}`);
-    this.log(`Type: events`);
+    this.log(`Type: ${dbInfo.type}`);
     this.log(`Adress: ${dbInfo.address}`);
     this.log(`Peers: ${peersString}`);
     this.log(`Number of items: ${dbInfo.entries}`);

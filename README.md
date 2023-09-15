@@ -20,7 +20,31 @@
 
 ### Usage
 
-[Explain how to use this project]
+#### docstore
+
+`orbitdb docstore --help`
+```man
+Docstore type database related commands (see examples below)
+
+USAGE
+  $ orbitdb docstore
+
+DESCRIPTION
+  Docstore type database related commands (see examples below)
+
+EXAMPLES
+  $ orbitdb docstore --help
+
+COMMANDS
+  docstore create  Create a Docstore type database
+  docstore del     Delete a file to a docstore type database
+  docstore drop    Delete a docstore type database locally (This doesn't remove data on other nodes that have the removed
+                   database replicated.)
+  docstore get     Get a value by its key from a docstore type database
+  docstore info    Show informations about a docstore type database
+  docstore list    Get all keys from a docstore type database
+  docstore put     Add a file to a docstore type database
+```
 
 ## Get involved
 

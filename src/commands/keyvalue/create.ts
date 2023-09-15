@@ -3,12 +3,12 @@ import { startOrbitDB } from "../../services/start-OrbitDB";
 import { stopOrbitDB } from "../../services/stop-OrbitDB";
 import { createDB } from "../../utils/create-DB";
 
-export default class FeedCreate extends Command {
-  static description = "Create a feed type database";
+export default class KeyValueCreate extends Command {
+  static description = "Create a KeyValue type database";
 
   static examples = [
-    "<%= config.bin %> <%= command.id %> --name=myFeedDbLOL",
-    "<%= config.bin %> <%= command.id %> --name=myFeedDbLOL --force",
+    "<%= config.bin %> <%= command.id %> --name=myKeyValueDbLOL",
+    "<%= config.bin %> <%= command.id %> --name=myKeyValueDbLOL --force",
   ];
 
   static flags = {
@@ -26,11 +26,11 @@ export default class FeedCreate extends Command {
   };
 
   public async run(): Promise<void> {
-    const { flags } = await this.parse(FeedCreate);
+    const { flags } = await this.parse(KeyValueCreate);
     const orbitdb = await startOrbitDB(true);
 
     this.log(`creating database name: ${flags.name} ...`);
-    const db = await createDB(orbitdb, flags.name, "feed", {
+    const db = await createDB(orbitdb, flags.name, "keyvalue", {
       overwrite: flags.force,
     });
     this.log(`created database: ${db.address}`);

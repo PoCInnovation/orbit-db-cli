@@ -35,8 +35,7 @@ const startIpfs = async (start: boolean, ipfsAddress: string | undefined = undef
     const { BlockstoreDatastoreAdapter } = await import(
       "blockstore-datastore-adapter"
     );
-    // @ts-ignore
-    const { Multiaddr } = await import('@multiformats/multiaddr');
+    const { multiaddr } = await import('@multiformats/multiaddr');
     const { createRepo } = await import("ipfs-repo");
     const { LevelDatastore } = await import("datastore-level");
     const loadCodec = await getLoadCodec();
@@ -62,7 +61,7 @@ const startIpfs = async (start: boolean, ipfsAddress: string | undefined = undef
     });
 
     if (ipfsAddress !== undefined) {
-      await ipfs.swarm.connect(Multiaddr(ipfsAddress));
+      await ipfs.swarm.connect(multiaddr(ipfsAddress));
     }
 
     return ipfs;

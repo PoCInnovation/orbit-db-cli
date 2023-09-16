@@ -63,6 +63,12 @@ const openDB = async (
   }
 
   if (options.showSpinner) ux.action.start(`Opening ${type} DB ${name}`);
+
+
+  // @ts-ignore
+  const { OrbitDBAccessController } = await import("@orbitdb/core");
+  const AccessController = await OrbitDBAccessController({ write: ['*']});
+
   try {
     // @ts-ignore
     const entryStorage = await getEntryStorage(orbitdb.ipfs, options.pinIpfsBlocks);
@@ -73,6 +79,7 @@ const openDB = async (
       localOnly: options.localOnly,
       sync: options.sync,
       entryStorage: entryStorage,
+      AccessController: AccessController,
     });
     if (options.showSpinner) ux.action.stop();
     if (options.showSpinner) ux.action.start('Loading last snapshot');

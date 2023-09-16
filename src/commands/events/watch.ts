@@ -60,10 +60,13 @@ export default class EventsWatch extends Command {
       switch (res) {
         case "name":
           this.log(`${db.name}`)
+          break;
         case "type":
           this.log(`events`)
+          break;
         case "address":
           this.log(`${db.address.toString()}`)
+          break;
         case "peers":
           let peersString = ''
           db.sync.peers.forEach((peer: string) => {
@@ -71,12 +74,19 @@ export default class EventsWatch extends Command {
           })
           peersString = peersString.substring(2)
           this.log(`${peersString}`)
+          break;
         case "entries":
           this.log(`${(await db.log.values()).length}`)
+          break;
         case "write-access":
           this.log(`${db.access.write}`)
+          break;
         case "help":
-          this.log('commands: help, name, type, address, peers, entries, quit')
+          this.log('commands: help, name, type, address, peers, entries, exit')
+          break;
+        default:
+          this.log("unknown command; type 'help' for more info");
+          break;
       }
     }
 

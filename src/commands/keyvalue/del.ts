@@ -28,12 +28,17 @@ export default class KeyValueDel extends Command {
     }),
     json: Flags.boolean({
       description: "output as JSON",
+    }),
+    ipfs: Flags.string({
+      char: "i",
+      description: "ipfs address of the peer",
+      required: false
     })
   };
 
   public async run(): Promise<{name: string, keys: {key: string, deleted: boolean}[]}> {
     const { flags } = await this.parse(KeyValueDel);
-    const orbitdb = await startOrbitDB(true, !flags.json);
+    const orbitdb = await startOrbitDB(true, !flags.json, flags.ipfs);
 
     const db = await openDB(orbitdb, flags.dbName, "keyvalue", { showSpinner: !flags.json });
     let keysDel: {key: string, deleted: boolean}[] = [];

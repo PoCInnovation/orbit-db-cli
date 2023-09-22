@@ -30,12 +30,17 @@ export default class KeyValueDrop extends Command {
     }),
     json: Flags.boolean({
       description: "output as JSON",
+    }),
+    ipfs: Flags.string({
+      char: "i",
+      description: "ipfs address of the peer",
+      required: false
     })
   };
 
   public async run(): Promise<{ name: string; dropped: boolean }> {
     const { flags } = await this.parse(KeyValueDrop);
-    const orbitdb = await startOrbitDB(true, !flags.json);
+    const orbitdb = await startOrbitDB(true, !flags.json, flags.ipfs);
 
     const db = await openDB(orbitdb, flags.name, "keyvalue", { showSpinner: !flags.json });
 

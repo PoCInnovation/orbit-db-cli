@@ -26,12 +26,17 @@ export default class DocstoreGet extends Command {
     }),
     json: Flags.boolean({
       description: "output as JSON",
+    }),
+    ipfs: Flags.string({
+      char: "i",
+      description: "ipfs address of the peer",
+      required: false
     })
   };
 
   public async run(): Promise<{name: string, docs: {_id: string, content: string}[]}> {
     const { flags } = await this.parse(DocstoreGet);
-    const orbitdb = await startOrbitDB(true, !flags.json);
+    const orbitdb = await startOrbitDB(true, !flags.json, flags.ipfs);
 
     const db = await openDB(orbitdb, flags.dbName, "documents", { showSpinner: !flags.json });
 

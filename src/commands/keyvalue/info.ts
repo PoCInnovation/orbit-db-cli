@@ -18,30 +18,39 @@ export default class KeyValueInfo extends Command {
       description: "name of the database",
       required: true,
     }),
+    ipfs: Flags.string({
+      char: "i",
+      description: "ipfs address of the peer",
+      required: false
+    })
   };
 
-  public async run(): Promise<{name: string, type: string, address: string, owner: string; dataFile: string; entries: number; writeAccess: boolean}> {
+  public async run(): Promise<{name: string, type: string, address: string, peers: Set<string>; entries: number; writeAccess: boolean}> {
     const { flags } = await this.parse(KeyValueInfo);
-    const orbitdb = await startOrbitDB(true, !flags.json);
+    const orbitdb = await startOrbitDB(true, !flags.json, flags.ipfs);
 
     const db = await openDB(orbitdb, flags.dbName, "keyvalue", { showSpinner: !flags.json });
+    let peersString = ''
+    db.sync.peers.forEach((peer: string) => {
+      peersString += ', ' + peer
+    })
+    peersString = peersString.substring(2)
     const dbInfo = {
-      name: db.dbname,
-      type: db._type,
+      name: db.name,
+      type: 'keyvalue',
       address: db.address.toString(),
-      owner: db.id,
-      dataFile: `./${db._cache.path}`,
-      entries: db._oplog.length,
+      peers: db.sync.peers,
+      entries: (await db.log.values()).length,
       writeAccess: db.access.write,
     }
-    this.log("--- Database informations ---\n");
+    this.log("\n--- Database informations ---");
     this.log(`Name: ${dbInfo.name}`);
     this.log(`Type: ${dbInfo.type}`);
     this.log(`Adress: ${dbInfo.address}`);
-    this.log(`Owner: ${dbInfo.owner}`);
-    this.log(`Data file: ${dbInfo.dataFile}`);
-    this.log(`Value: ${dbInfo.entries}`);
+    this.log(`Peers: ${peersString}`);
+    this.log(`Number of items: ${dbInfo.entries}`);
     this.log(`Write-Access: ${dbInfo.writeAccess}`);
+    this.log("--- End ---\n");
 
     await db.close();
     await stopOrbitDB(orbitdb, !flags.json);

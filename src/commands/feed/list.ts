@@ -7,10 +7,10 @@ import { resolveDBIdByName } from "../../utils/resolve-DBIdByName";
 import { saveDB } from "../../utils/save-DB";
 
 export default class FeedList extends Command {
-  static description = "Show informations about a feed type database";
+  static description = "Show values of a feed type database";
 
   static examples: Command.Example[] = [
-    "<%= config.bin %> <%= command.id %> --name=myFeedDbName --file=myFile",
+    "<%= config.bin %> <%= command.id %> --name=myFeedDbName --limit=10",
   ];
 
   static flags = {
